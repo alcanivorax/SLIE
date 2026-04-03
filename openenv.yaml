@@ -1,0 +1,85 @@
+name: slie
+version: "1.1.0"
+description: "Sign Language Interaction Environment — AI agent interprets structured sign-language inputs and performs tasks via reasoning and intent inference."
+author: "slie-team"
+tags:
+  - openenv
+  - accessibility
+  - sign-language
+  - nlp
+  - agent-evaluation
+
+tasks:
+  - id: task1
+    name: "Command Recognition"
+    difficulty: easy
+    max_steps: 10
+
+  - id: task2
+    name: "Multi-step Interaction"
+    difficulty: medium
+    max_steps: 10
+
+  - id: task3
+    name: "Intent Inference"
+    difficulty: hard
+    max_steps: 10
+
+observation_space:
+  type: object
+  properties:
+    detected_gesture:
+      type: string
+      nullable: true
+      description: "Symbolic gesture label (e.g. HELLO, YES, STOP). Null when episode is done."
+    gesture_embedding:
+      type: array
+      items: { type: number }
+      length: 64
+      description: "Pre-baked 64-dim float embedding for the gesture."
+    hand_landmarks:
+      type: array
+      items:
+        type: object
+        properties:
+          left_hand:
+            type: array
+            items: { type: object }
+          right_hand:
+            type: array
+            items: { type: object }
+      description: "Structured hand landmark frames (21 points per hand per frame)."
+    context:
+      type: object
+      properties:
+        current_task: { type: string }
+        step_count: { type: integer }
+        history: { type: array, items: { type: string } }
+
+action_space:
+  type: object
+  required: [intent, confidence, response]
+  properties:
+    intent:
+      type: string
+      maxLength: 100
+      description: "Agent's interpretation of the gesture's meaning."
+    confidence:
+      type: number
+      minimum: 0.0
+      maximum: 1.0
+      description: "Agent's confidence in the intent (clamped to [0,1])."
+    response:
+      type: string
+      maxLength: 500
+      description: "Natural language action taken in response to the gesture."
+
+endpoints:
+  reset: POST /reset
+  step: POST /step
+  state: GET /state
+  health: GET /health
+
+docker:
+  port: 8000
+  build_context: "."

@@ -1,0 +1,12 @@
+.codex
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+.pytest_cache/
+venv/
+.git/
+.gitignore
+AGENTS/
+docs/
+tests/

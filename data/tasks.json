@@ -1,0 +1,1452 @@
+{
+  "task1": {
+    "scenarios": [
+      {
+        "id": 0,
+        "gesture_sequence": [
+          "HELLO",
+          "YES",
+          "STOP",
+          "HELP",
+          "GOODBYE"
+        ],
+        "steps": [
+          {
+            "gesture": "HELLO",
+            "expected_intent": "greeting",
+            "intent_aliases": [
+              "hello",
+              "hi",
+              "welcome"
+            ],
+            "expected_keywords": [
+              "hello",
+              "hi",
+              "greet",
+              "welcome",
+              "help"
+            ]
+          },
+          {
+            "gesture": "YES",
+            "expected_intent": "confirm",
+            "intent_aliases": [
+              "yes",
+              "agree",
+              "ok",
+              "okay"
+            ],
+            "expected_keywords": [
+              "yes",
+              "confirm",
+              "ok",
+              "proceed",
+              "sure"
+            ]
+          },
+          {
+            "gesture": "STOP",
+            "expected_intent": "halt",
+            "intent_aliases": [
+              "stop",
+              "pause",
+              "end",
+              "cease"
+            ],
+            "expected_keywords": [
+              "stop",
+              "halt",
+              "pause",
+              "end",
+              "cancel"
+            ]
+          },
+          {
+            "gesture": "HELP",
+            "expected_intent": "request_help",
+            "intent_aliases": [
+              "help",
+              "assist",
+              "support"
+            ],
+            "expected_keywords": [
+              "help",
+              "assist",
+              "support",
+              "how",
+              "what"
+            ]
+          },
+          {
+            "gesture": "GOODBYE",
+            "expected_intent": "farewell",
+            "intent_aliases": [
+              "bye",
+              "goodbye",
+              "exit",
+              "leave"
+            ],
+            "expected_keywords": [
+              "goodbye",
+              "bye",
+              "later",
+              "farewell",
+              "exit"
+            ]
+          }
+        ]
+      },
+      {
+        "id": 1,
+        "gesture_sequence": [
+          "OPEN",
+          "CLOSE",
+          "YES",
+          "NO",
+          "HELP"
+        ],
+        "steps": [
+          {
+            "gesture": "OPEN",
+            "expected_intent": "open_action",
+            "intent_aliases": [
+              "open",
+              "start",
+              "launch",
+              "begin"
+            ],
+            "expected_keywords": [
+              "open",
+              "launch",
+              "start",
+              "begin"
+            ]
+          },
+          {
+            "gesture": "CLOSE",
+            "expected_intent": "close_action",
+            "intent_aliases": [
+              "close",
+              "shut",
+              "exit",
+              "end"
+            ],
+            "expected_keywords": [
+              "close",
+              "shut",
+              "exit",
+              "stop"
+            ]
+          },
+          {
+            "gesture": "YES",
+            "expected_intent": "confirm",
+            "intent_aliases": [
+              "yes",
+              "agree",
+              "ok",
+              "okay"
+            ],
+            "expected_keywords": [
+              "yes",
+              "confirm",
+              "ok",
+              "proceed"
+            ]
+          },
+          {
+            "gesture": "NO",
+            "expected_intent": "deny",
+            "intent_aliases": [
+              "no",
+              "reject",
+              "cancel",
+              "refuse"
+            ],
+            "expected_keywords": [
+              "no",
+              "reject",
+              "cancel",
+              "deny"
+            ]
+          },
+          {
+            "gesture": "HELP",
+            "expected_intent": "request_help",
+            "intent_aliases": [
+              "help",
+              "assist",
+              "support"
+            ],
+            "expected_keywords": [
+              "help",
+              "assist",
+              "support"
+            ]
+          }
+        ]
+      },
+      {
+        "id": 2,
+        "gesture_sequence": [
+          "FOOD",
+          "WATER",
+          "YES",
+          "STOP",
+          "HELLO"
+        ],
+        "steps": [
+          {
+            "gesture": "FOOD",
+            "expected_intent": "request_food",
+            "intent_aliases": [
+              "food",
+              "eat",
+              "hungry",
+              "meal"
+            ],
+            "expected_keywords": [
+              "food",
+              "eat",
+              "meal",
+              "restaurant",
+              "hungry"
+            ]
+          },
+          {
+            "gesture": "WATER",
+            "expected_intent": "request_water",
+            "intent_aliases": [
+              "water",
+              "drink",
+              "thirsty"
+            ],
+            "expected_keywords": [
+              "water",
+              "drink",
+              "thirsty"
+            ]
+          },
+          {
+            "gesture": "YES",
+            "expected_intent": "confirm",
+            "intent_aliases": [
+              "yes",
+              "agree",
+              "ok"
+            ],
+            "expected_keywords": [
+              "yes",
+              "confirm",
+              "ok"
+            ]
+          },
+          {
+            "gesture": "STOP",
+            "expected_intent": "halt",
+            "intent_aliases": [
+              "stop",
+              "pause",
+              "end"
+            ],
+            "expected_keywords": [
+              "stop",
+              "halt",
+              "pause"
+            ]
+          },
+          {
+            "gesture": "HELLO",
+            "expected_intent": "greeting",
+            "intent_aliases": [
+              "hello",
+              "hi",
+              "welcome"
+            ],
+            "expected_keywords": [
+              "hello",
+              "hi",
+              "greet"
+            ]
+          }
+        ]
+      },
+      {
+        "id": 3,
+        "gesture_sequence": [
+          "MUSIC",
+          "PLAY",
+          "YES",
+          "LOUDER",
+          "STOP"
+        ],
+        "steps": [
+          {
+            "gesture": "MUSIC",
+            "expected_intent": "request_music",
+            "intent_aliases": [
+              "music",
+              "song",
+              "audio",
+              "play_music"
+            ],
+            "expected_keywords": [
+              "music",
+              "song",
+              "play",
+              "audio"
+            ]
+          },
+          {
+            "gesture": "PLAY",
+            "expected_intent": "play_action",
+            "intent_aliases": [
+              "play",
+              "start",
+              "begin",
+              "resume"
+            ],
+            "expected_keywords": [
+              "play",
+              "start",
+              "begin",
+              "resume"
+            ]
+          },
+          {
+            "gesture": "YES",
+            "expected_intent": "confirm",
+            "intent_aliases": [
+              "yes",
+              "agree",
+              "ok"
+            ],
+            "expected_keywords": [
+              "yes",
+              "confirm",
+              "ok"
+            ]
+          },
+          {
+            "gesture": "LOUDER",
+            "expected_intent": "increase_volume",
+            "intent_aliases": [
+              "louder",
+              "volume_up",
+              "increase"
+            ],
+            "expected_keywords": [
+              "louder",
+              "volume",
+              "increase",
+              "up"
+            ]
+          },
+          {
+            "gesture": "STOP",
+            "expected_intent": "halt",
+            "intent_aliases": [
+              "stop",
+              "pause",
+              "end"
+            ],
+            "expected_keywords": [
+              "stop",
+              "halt",
+              "pause",
+              "end"
+            ]
+          }
+        ]
+      },
+      {
+        "id": 4,
+        "gesture_sequence": [
+          "CALL",
+          "YES",
+          "WAIT",
+          "NO",
+          "GOODBYE"
+        ],
+        "steps": [
+          {
+            "gesture": "CALL",
+            "expected_intent": "make_call",
+            "intent_aliases": [
+              "call",
+              "phone",
+              "dial",
+              "ring"
+            ],
+            "expected_keywords": [
+              "call",
+              "phone",
+              "dial",
+              "ring"
+            ]
+          },
+          {
+            "gesture": "YES",
+            "expected_intent": "confirm",
+            "intent_aliases": [
+              "yes",
+              "agree",
+              "ok"
+            ],
+            "expected_keywords": [
+              "yes",
+              "confirm",
+              "ok"
+            ]
+          },
+          {
+            "gesture": "WAIT",
+            "expected_intent": "request_wait",
+            "intent_aliases": [
+              "wait",
+              "hold",
+              "pause",
+              "moment"
+            ],
+            "expected_keywords": [
+              "wait",
+              "hold",
+              "moment",
+              "pause"
+            ]
+          },
+          {
+            "gesture": "NO",
+            "expected_intent": "deny",
+            "intent_aliases": [
+              "no",
+              "reject",
+              "cancel"
+            ],
+            "expected_keywords": [
+              "no",
+              "cancel",
+              "reject"
+            ]
+          },
+          {
+            "gesture": "GOODBYE",
+            "expected_intent": "farewell",
+            "intent_aliases": [
+              "bye",
+              "goodbye",
+              "exit"
+            ],
+            "expected_keywords": [
+              "goodbye",
+              "bye",
+              "farewell"
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  "task2": {
+    "scenarios": [
+      {
+        "id": 0,
+        "gesture_sequence": [
+          "OPEN",
+          "YOUTUBE",
+          "SEARCH",
+          "MUSIC",
+          "PLAY",
+          "LOUDER",
+          "STOP",
+          "CLOSE"
+        ],
+        "steps": [
+          {
+            "gesture": "OPEN",
+            "expected_intent": "open_action",
+            "intent_aliases": [
+              "open",
+              "start",
+              "launch"
+            ],
+            "expected_keywords": [
+              "open",
+              "launch",
+              "start"
+            ],
+            "context_sets": {
+              "active_app": null
+            }
+          },
+          {
+            "gesture": "YOUTUBE",
+            "expected_intent": "select_app:youtube",
+            "intent_aliases": [
+              "youtube",
+              "open_youtube",
+              "select_youtube"
+            ],
+            "expected_keywords": [
+              "youtube",
+              "opening",
+              "launching"
+            ],
+            "context_sets": {
+              "active_app": "youtube"
+            }
+          },
+          {
+            "gesture": "SEARCH",
+            "expected_intent": "search_action",
+            "intent_aliases": [
+              "search",
+              "find",
+              "look"
+            ],
+            "expected_keywords": [
+              "search",
+              "find",
+              "looking",
+              "query"
+            ],
+            "context_requires": {
+              "active_app": "youtube"
+            }
+          },
+          {
+            "gesture": "MUSIC",
+            "expected_intent": "search_query:music",
+            "intent_aliases": [
+              "music",
+              "songs",
+              "audio"
+            ],
+            "expected_keywords": [
+              "music",
+              "songs",
+              "searching"
+            ]
+          },
+          {
+            "gesture": "PLAY",
+            "expected_intent": "play_action",
+            "intent_aliases": [
+              "play",
+              "start",
+              "begin"
+            ],
+            "expected_keywords": [
+              "play",
+              "playing",
+              "start"
+            ]
+          },
+          {
+            "gesture": "LOUDER",
+            "expected_intent": "increase_volume",
+            "intent_aliases": [
+              "louder",
+              "volume_up",
+              "increase"
+            ],
+            "expected_keywords": [
+              "volume",
+              "louder",
+              "increasing"
+            ]
+          },
+          {
+            "gesture": "STOP",
+            "expected_intent": "halt",
+            "intent_aliases": [
+              "stop",
+              "pause"
+            ],
+            "expected_keywords": [
+              "stop",
+              "pause",
+              "stopping"
+            ]
+          },
+          {
+            "gesture": "CLOSE",
+            "expected_intent": "close_action",
+            "intent_aliases": [
+              "close",
+              "exit",
+              "quit"
+            ],
+            "expected_keywords": [
+              "close",
+              "exit",
+              "closing"
+            ]
+          }
+        ]
+      },
+      {
+        "id": 1,
+        "gesture_sequence": [
+          "OPEN",
+          "MAP",
+          "SEARCH",
+          "HOME",
+          "NEAR",
+          "NOW",
+          "STOP",
+          "CLOSE"
+        ],
+        "steps": [
+          {
+            "gesture": "OPEN",
+            "expected_intent": "open_action",
+            "intent_aliases": [
+              "open",
+              "launch",
+              "start"
+            ],
+            "expected_keywords": [
+              "open",
+              "launch",
+              "start"
+            ]
+          },
+          {
+            "gesture": "MAP",
+            "expected_intent": "select_app:maps",
+            "intent_aliases": [
+              "maps",
+              "open_maps",
+              "map_app"
+            ],
+            "expected_keywords": [
+              "map",
+              "maps",
+              "navigation"
+            ]
+          },
+          {
+            "gesture": "SEARCH",
+            "expected_intent": "search_action",
+            "intent_aliases": [
+              "search",
+              "find",
+              "lookup"
+            ],
+            "expected_keywords": [
+              "search",
+              "find",
+              "looking"
+            ]
+          },
+          {
+            "gesture": "HOME",
+            "expected_intent": "search_query:home",
+            "intent_aliases": [
+              "home",
+              "my_home",
+              "address_home"
+            ],
+            "expected_keywords": [
+              "home",
+              "address",
+              "route"
+            ]
+          },
+          {
+            "gesture": "NEAR",
+            "expected_intent": "set_proximity_filter",
+            "intent_aliases": [
+              "nearby",
+              "near",
+              "close_by"
+            ],
+            "expected_keywords": [
+              "near",
+              "nearby",
+              "close"
+            ]
+          },
+          {
+            "gesture": "NOW",
+            "expected_intent": "navigate_now",
+            "intent_aliases": [
+              "now",
+              "start_navigation",
+              "go_now"
+            ],
+            "expected_keywords": [
+              "now",
+              "start",
+              "navigate"
+            ]
+          },
+          {
+            "gesture": "STOP",
+            "expected_intent": "halt",
+            "intent_aliases": [
+              "stop",
+              "pause",
+              "cancel"
+            ],
+            "expected_keywords": [
+              "stop",
+              "pause",
+              "cancel"
+            ]
+          },
+          {
+            "gesture": "CLOSE",
+            "expected_intent": "close_action",
+            "intent_aliases": [
+              "close",
+              "exit",
+              "quit"
+            ],
+            "expected_keywords": [
+              "close",
+              "exit",
+              "quit"
+            ]
+          }
+        ]
+      },
+      {
+        "id": 2,
+        "gesture_sequence": [
+          "OPEN",
+          "CALL",
+          "SEARCH",
+          "HOME",
+          "YES",
+          "NOW",
+          "STOP",
+          "CLOSE"
+        ],
+        "steps": [
+          {
+            "gesture": "OPEN",
+            "expected_intent": "open_action",
+            "intent_aliases": [
+              "open",
+              "launch",
+              "start"
+            ],
+            "expected_keywords": [
+              "open",
+              "launch",
+              "start"
+            ]
+          },
+          {
+            "gesture": "CALL",
+            "expected_intent": "select_app:phone",
+            "intent_aliases": [
+              "phone",
+              "dialer",
+              "open_phone"
+            ],
+            "expected_keywords": [
+              "phone",
+              "dial",
+              "call"
+            ]
+          },
+          {
+            "gesture": "SEARCH",
+            "expected_intent": "search_contact",
+            "intent_aliases": [
+              "find_contact",
+              "lookup_contact",
+              "search"
+            ],
+            "expected_keywords": [
+              "search",
+              "contact",
+              "find"
+            ]
+          },
+          {
+            "gesture": "HOME",
+            "expected_intent": "contact:home",
+            "intent_aliases": [
+              "home_contact",
+              "call_home",
+              "family_home"
+            ],
+            "expected_keywords": [
+              "home",
+              "contact",
+              "family"
+            ]
+          },
+          {
+            "gesture": "YES",
+            "expected_intent": "confirm",
+            "intent_aliases": [
+              "yes",
+              "agree",
+              "ok"
+            ],
+            "expected_keywords": [
+              "yes",
+              "confirm",
+              "ok"
+            ]
+          },
+          {
+            "gesture": "NOW",
+            "expected_intent": "call_now",
+            "intent_aliases": [
+              "dial_now",
+              "start_call",
+              "call_immediately"
+            ],
+            "expected_keywords": [
+              "call",
+              "now",
+              "dial"
+            ]
+          },
+          {
+            "gesture": "STOP",
+            "expected_intent": "halt",
+            "intent_aliases": [
+              "stop",
+              "end_call",
+              "hangup"
+            ],
+            "expected_keywords": [
+              "stop",
+              "end",
+              "hang"
+            ]
+          },
+          {
+            "gesture": "CLOSE",
+            "expected_intent": "close_action",
+            "intent_aliases": [
+              "close",
+              "exit",
+              "quit"
+            ],
+            "expected_keywords": [
+              "close",
+              "exit",
+              "quit"
+            ]
+          }
+        ]
+      },
+      {
+        "id": 3,
+        "gesture_sequence": [
+          "OPEN",
+          "SEARCH",
+          "FOOD",
+          "NEAR",
+          "NOW",
+          "MAP",
+          "STOP",
+          "CLOSE"
+        ],
+        "steps": [
+          {
+            "gesture": "OPEN",
+            "expected_intent": "open_action",
+            "intent_aliases": [
+              "open",
+              "launch",
+              "start"
+            ],
+            "expected_keywords": [
+              "open",
+              "launch",
+              "start"
+            ]
+          },
+          {
+            "gesture": "SEARCH",
+            "expected_intent": "search_action",
+            "intent_aliases": [
+              "search",
+              "find",
+              "lookup"
+            ],
+            "expected_keywords": [
+              "search",
+              "find",
+              "look"
+            ]
+          },
+          {
+            "gesture": "FOOD",
+            "expected_intent": "search_query:food",
+            "intent_aliases": [
+              "food",
+              "restaurant",
+              "meal"
+            ],
+            "expected_keywords": [
+              "food",
+              "restaurant",
+              "meal"
+            ]
+          },
+          {
+            "gesture": "NEAR",
+            "expected_intent": "set_proximity_filter",
+            "intent_aliases": [
+              "near",
+              "nearby",
+              "close_by"
+            ],
+            "expected_keywords": [
+              "near",
+              "nearby",
+              "close"
+            ]
+          },
+          {
+            "gesture": "NOW",
+            "expected_intent": "request_immediate_results",
+            "intent_aliases": [
+              "now",
+              "immediate",
+              "urgent"
+            ],
+            "expected_keywords": [
+              "now",
+              "immediate",
+              "urgent"
+            ]
+          },
+          {
+            "gesture": "MAP",
+            "expected_intent": "open_results_on_map",
+            "intent_aliases": [
+              "map_results",
+              "show_map",
+              "open_map"
+            ],
+            "expected_keywords": [
+              "map",
+              "route",
+              "location"
+            ]
+          },
+          {
+            "gesture": "STOP",
+            "expected_intent": "halt",
+            "intent_aliases": [
+              "stop",
+              "cancel",
+              "pause"
+            ],
+            "expected_keywords": [
+              "stop",
+              "cancel",
+              "pause"
+            ]
+          },
+          {
+            "gesture": "CLOSE",
+            "expected_intent": "close_action",
+            "intent_aliases": [
+              "close",
+              "exit",
+              "quit"
+            ],
+            "expected_keywords": [
+              "close",
+              "exit",
+              "quit"
+            ]
+          }
+        ]
+      },
+      {
+        "id": 4,
+        "gesture_sequence": [
+          "OPEN",
+          "MUSIC",
+          "SEARCH",
+          "QUIET",
+          "SLEEP",
+          "PLAY",
+          "STOP",
+          "CLOSE"
+        ],
+        "steps": [
+          {
+            "gesture": "OPEN",
+            "expected_intent": "open_action",
+            "intent_aliases": [
+              "open",
+              "launch",
+              "start"
+            ],
+            "expected_keywords": [
+              "open",
+              "launch",
+              "start"
+            ]
+          },
+          {
+            "gesture": "MUSIC",
+            "expected_intent": "select_app:music",
+            "intent_aliases": [
+              "music_app",
+              "open_music",
+              "music"
+            ],
+            "expected_keywords": [
+              "music",
+              "audio",
+              "player"
+            ]
+          },
+          {
+            "gesture": "SEARCH",
+            "expected_intent": "search_action",
+            "intent_aliases": [
+              "search",
+              "find",
+              "lookup"
+            ],
+            "expected_keywords": [
+              "search",
+              "find",
+              "lookup"
+            ]
+          },
+          {
+            "gesture": "QUIET",
+            "expected_intent": "search_query:quiet",
+            "intent_aliases": [
+              "quiet",
+              "soft",
+              "calm"
+            ],
+            "expected_keywords": [
+              "quiet",
+              "soft",
+              "calm"
+            ]
+          },
+          {
+            "gesture": "SLEEP",
+            "expected_intent": "search_query:sleep",
+            "intent_aliases": [
+              "sleep",
+              "bedtime",
+              "relax"
+            ],
+            "expected_keywords": [
+              "sleep",
+              "relax",
+              "bedtime"
+            ]
+          },
+          {
+            "gesture": "PLAY",
+            "expected_intent": "play_action",
+            "intent_aliases": [
+              "play",
+              "start",
+              "begin"
+            ],
+            "expected_keywords": [
+              "play",
+              "start",
+              "begin"
+            ]
+          },
+          {
+            "gesture": "STOP",
+            "expected_intent": "halt",
+            "intent_aliases": [
+              "stop",
+              "pause",
+              "end"
+            ],
+            "expected_keywords": [
+              "stop",
+              "pause",
+              "end"
+            ]
+          },
+          {
+            "gesture": "CLOSE",
+            "expected_intent": "close_action",
+            "intent_aliases": [
+              "close",
+              "exit",
+              "quit"
+            ],
+            "expected_keywords": [
+              "close",
+              "exit",
+              "quit"
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  "task3": {
+    "scenarios": [
+      {
+        "id": 0,
+        "gesture_sequence": [
+          "FOOD",
+          "NEAR",
+          "NOW"
+        ],
+        "compound_intent": "find_nearby_restaurants",
+        "intent_aliases": [
+          "find_restaurant",
+          "nearby_food",
+          "restaurant_near_me",
+          "food_nearby"
+        ],
+        "expected_keywords": [
+          "restaurant",
+          "nearby",
+          "food",
+          "find",
+          "location"
+        ],
+        "explanation": "FOOD + NEAR + NOW = find nearby food immediately = restaurant search",
+        "steps": [
+          {
+            "gesture": "FOOD",
+            "expected_intent": "request_food",
+            "intent_aliases": [
+              "food",
+              "eat",
+              "meal"
+            ],
+            "expected_keywords": [
+              "food",
+              "eat",
+              "meal"
+            ]
+          },
+          {
+            "gesture": "NEAR",
+            "expected_intent": "set_proximity_filter",
+            "intent_aliases": [
+              "near",
+              "nearby",
+              "close"
+            ],
+            "expected_keywords": [
+              "near",
+              "nearby",
+              "location"
+            ]
+          },
+          {
+            "gesture": "NOW",
+            "expected_intent": "find_nearby_restaurants",
+            "intent_aliases": [
+              "find_restaurant",
+              "nearby_food",
+              "restaurant_near_me",
+              "food_nearby"
+            ],
+            "expected_keywords": [
+              "restaurant",
+              "nearby",
+              "food",
+              "find",
+              "location"
+            ]
+          }
+        ]
+      },
+      {
+        "id": 1,
+        "gesture_sequence": [
+          "CALL",
+          "HELP",
+          "NOW"
+        ],
+        "compound_intent": "emergency_call",
+        "intent_aliases": [
+          "call_help",
+          "urgent_call",
+          "sos",
+          "call_emergency"
+        ],
+        "expected_keywords": [
+          "emergency",
+          "call",
+          "help",
+          "urgent",
+          "now"
+        ],
+        "explanation": "CALL + HELP + NOW = urgent call for help = emergency",
+        "steps": [
+          {
+            "gesture": "CALL",
+            "expected_intent": "make_call",
+            "intent_aliases": [
+              "call",
+              "dial",
+              "phone"
+            ],
+            "expected_keywords": [
+              "call",
+              "dial",
+              "phone"
+            ]
+          },
+          {
+            "gesture": "HELP",
+            "expected_intent": "request_help",
+            "intent_aliases": [
+              "help",
+              "assist",
+              "support"
+            ],
+            "expected_keywords": [
+              "help",
+              "assist",
+              "urgent"
+            ]
+          },
+          {
+            "gesture": "NOW",
+            "expected_intent": "emergency_call",
+            "intent_aliases": [
+              "call_help",
+              "urgent_call",
+              "sos",
+              "call_emergency"
+            ],
+            "expected_keywords": [
+              "emergency",
+              "call",
+              "help",
+              "urgent",
+              "now"
+            ]
+          }
+        ]
+      },
+      {
+        "id": 2,
+        "gesture_sequence": [
+          "MUSIC",
+          "QUIET",
+          "SLEEP"
+        ],
+        "compound_intent": "play_sleep_music",
+        "intent_aliases": [
+          "sleep_music",
+          "quiet_music",
+          "relaxing_music",
+          "calm_music"
+        ],
+        "expected_keywords": [
+          "sleep",
+          "quiet",
+          "calm",
+          "music",
+          "relax"
+        ],
+        "explanation": "MUSIC + QUIET + SLEEP = play quiet music for sleeping",
+        "steps": [
+          {
+            "gesture": "MUSIC",
+            "expected_intent": "request_music",
+            "intent_aliases": [
+              "music",
+              "audio",
+              "song"
+            ],
+            "expected_keywords": [
+              "music",
+              "song",
+              "audio"
+            ]
+          },
+          {
+            "gesture": "QUIET",
+            "expected_intent": "increase_quietness",
+            "intent_aliases": [
+              "quiet",
+              "soft",
+              "lower_volume"
+            ],
+            "expected_keywords": [
+              "quiet",
+              "soft",
+              "calm"
+            ]
+          },
+          {
+            "gesture": "SLEEP",
+            "expected_intent": "play_sleep_music",
+            "intent_aliases": [
+              "sleep_music",
+              "quiet_music",
+              "relaxing_music",
+              "calm_music"
+            ],
+            "expected_keywords": [
+              "sleep",
+              "quiet",
+              "calm",
+              "music",
+              "relax"
+            ]
+          }
+        ]
+      },
+      {
+        "id": 3,
+        "gesture_sequence": [
+          "OPEN",
+          "MAP",
+          "HOME"
+        ],
+        "compound_intent": "navigate_home",
+        "intent_aliases": [
+          "go_home",
+          "directions_home",
+          "navigate_to_home",
+          "home_navigation"
+        ],
+        "expected_keywords": [
+          "home",
+          "navigate",
+          "directions",
+          "map",
+          "route"
+        ],
+        "explanation": "OPEN + MAP + HOME = open maps and navigate home",
+        "steps": [
+          {
+            "gesture": "OPEN",
+            "expected_intent": "open_action",
+            "intent_aliases": [
+              "open",
+              "launch",
+              "start"
+            ],
+            "expected_keywords": [
+              "open",
+              "launch",
+              "start"
+            ]
+          },
+          {
+            "gesture": "MAP",
+            "expected_intent": "select_app:maps",
+            "intent_aliases": [
+              "maps",
+              "map_app",
+              "open_maps"
+            ],
+            "expected_keywords": [
+              "map",
+              "maps",
+              "route"
+            ]
+          },
+          {
+            "gesture": "HOME",
+            "expected_intent": "navigate_home",
+            "intent_aliases": [
+              "go_home",
+              "directions_home",
+              "navigate_to_home",
+              "home_navigation"
+            ],
+            "expected_keywords": [
+              "home",
+              "navigate",
+              "directions",
+              "map",
+              "route"
+            ]
+          }
+        ]
+      },
+      {
+        "id": 4,
+        "gesture_sequence": [
+          "WATER",
+          "COLD",
+          "NOW"
+        ],
+        "compound_intent": "request_cold_water_immediately",
+        "intent_aliases": [
+          "cold_water",
+          "water_now",
+          "cold_drink_now",
+          "urgent_water"
+        ],
+        "expected_keywords": [
+          "cold",
+          "water",
+          "now",
+          "immediately",
+          "drink"
+        ],
+        "explanation": "WATER + COLD + NOW = urgently need cold water",
+        "steps": [
+          {
+            "gesture": "WATER",
+            "expected_intent": "request_water",
+            "intent_aliases": [
+              "water",
+              "drink",
+              "thirsty"
+            ],
+            "expected_keywords": [
+              "water",
+              "drink",
+              "thirsty"
+            ]
+          },
+          {
+            "gesture": "COLD",
+            "expected_intent": "temperature:cold",
+            "intent_aliases": [
+              "cold",
+              "chilled",
+              "cool"
+            ],
+            "expected_keywords": [
+              "cold",
+              "chilled",
+              "cool"
+            ]
+          },
+          {
+            "gesture": "NOW",
+            "expected_intent": "request_cold_water_immediately",
+            "intent_aliases": [
+              "cold_water",
+              "water_now",
+              "cold_drink_now",
+              "urgent_water"
+            ],
+            "expected_keywords": [
+              "cold",
+              "water",
+              "now",
+              "immediately",
+              "drink"
+            ]
+          }
+        ]
+      }
+    ]
+  }
+}

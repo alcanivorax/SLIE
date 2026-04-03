@@ -1,0 +1,1562 @@
+<!doctype html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <title>SLIE — Sign Language Interaction Environment</title>
+        <link rel="preconnect" href="https://fonts.googleapis.com" />
+        <link
+            href="https://fonts.googleapis.com/css2?family=DM+Mono:ital,wght@0,300;0,400;0,500;1,400&family=Syne:wght@400;500;600;700;800&display=swap"
+            rel="stylesheet"
+        />
+        <style>
+            *,
+            *::before,
+            *::after {
+                box-sizing: border-box;
+                margin: 0;
+                padding: 0;
+            }
+
+            :root {
+                --bg: #0a0a0f;
+                --bg2: #111118;
+                --bg3: #18181f;
+                --border: rgba(255, 255, 255, 0.07);
+                --border-active: rgba(120, 180, 255, 0.3);
+                --text: #e8e8f0;
+                --muted: #6b6b80;
+                --accent: #7ab4ff;
+                --accent2: #a78bfa;
+                --green: #4ade80;
+                --red: #f87171;
+                --amber: #fbbf24;
+                --mono: "DM Mono", monospace;
+                --display: "Syne", sans-serif;
+            }
+
+            html {
+                scroll-behavior: smooth;
+            }
+
+            body {
+                background: var(--bg);
+                color: var(--text);
+                font-family: var(--mono);
+                font-size: 13px;
+                line-height: 1.6;
+                min-height: 100vh;
+                overflow-x: hidden;
+            }
+
+            /* Subtle grid background */
+            body::before {
+                content: "";
+                position: fixed;
+                inset: 0;
+                background-image:
+                    linear-gradient(
+                        rgba(120, 180, 255, 0.03) 1px,
+                        transparent 1px
+                    ),
+                    linear-gradient(
+                        90deg,
+                        rgba(120, 180, 255, 0.03) 1px,
+                        transparent 1px
+                    );
+                background-size: 40px 40px;
+                pointer-events: none;
+                z-index: 0;
+            }
+
+            .wrap {
+                position: relative;
+                z-index: 1;
+                max-width: 1100px;
+                margin: 0 auto;
+                padding: 0 24px;
+            }
+
+            /* ── HEADER ── */
+            header {
+                padding: 32px 0 24px;
+                border-bottom: 1px solid var(--border);
+                margin-bottom: 32px;
+            }
+
+            .header-inner {
+                display: flex;
+                align-items: flex-end;
+                justify-content: space-between;
+                flex-wrap: wrap;
+                gap: 16px;
+            }
+
+            .logo-block {
+                display: flex;
+                flex-direction: column;
+                gap: 4px;
+            }
+
+            .logo {
+                font-family: var(--display);
+                font-size: 28px;
+                font-weight: 800;
+                letter-spacing: -0.5px;
+                color: #fff;
+                display: flex;
+                align-items: center;
+                gap: 10px;
+            }
+
+            .logo-tag {
+                font-family: var(--mono);
+                font-size: 10px;
+                font-weight: 400;
+                background: rgba(120, 180, 255, 0.12);
+                color: var(--accent);
+                border: 1px solid rgba(120, 180, 255, 0.2);
+                padding: 3px 8px;
+                border-radius: 4px;
+                letter-spacing: 0.08em;
+                text-transform: uppercase;
+                margin-left: 4px;
+                vertical-align: middle;
+            }
+
+            .tagline {
+                font-family: var(--mono);
+                font-size: 12px;
+                color: var(--muted);
+                font-style: italic;
+            }
+
+            .status-bar {
+                display: flex;
+                align-items: center;
+                gap: 16px;
+                font-size: 11px;
+                color: var(--muted);
+            }
+
+            .status-dot {
+                width: 7px;
+                height: 7px;
+                border-radius: 50%;
+                background: var(--muted);
+                display: inline-block;
+                margin-right: 5px;
+            }
+            .status-dot.live {
+                background: var(--green);
+                box-shadow: 0 0 6px var(--green);
+                animation: pulse 2s infinite;
+            }
+            .status-dot.err {
+                background: var(--red);
+            }
+
+            @keyframes pulse {
+                0%,
+                100% {
+                    opacity: 1;
+                }
+                50% {
+                    opacity: 0.5;
+                }
+            }
+
+            /* ── GRID LAYOUT ── */
+            .grid {
+                display: grid;
+                grid-template-columns: 340px 1fr;
+                grid-template-rows: auto auto auto;
+                gap: 16px;
+                margin-bottom: 16px;
+            }
+
+            @media (max-width: 800px) {
+                .grid {
+                    grid-template-columns: 1fr;
+                }
+            }
+
+            /* ── PANEL ── */
+            .panel {
+                background: var(--bg2);
+                border: 1px solid var(--border);
+                border-radius: 10px;
+                overflow: hidden;
+            }
+
+            .panel-head {
+                padding: 12px 16px;
+                border-bottom: 1px solid var(--border);
+                display: flex;
+                align-items: center;
+                justify-content: space-between;
+                background: rgba(255, 255, 255, 0.02);
+            }
+
+            .panel-title {
+                font-family: var(--display);
+                font-size: 11px;
+                font-weight: 600;
+                letter-spacing: 0.1em;
+                text-transform: uppercase;
+                color: var(--muted);
+            }
+
+            .panel-body {
+                padding: 16px;
+            }
+
+            /* ── TASK SELECTOR ── */
+            .task-tabs {
+                display: flex;
+                gap: 6px;
+                margin-bottom: 16px;
+            }
+
+            .task-tab {
+                flex: 1;
+                padding: 8px 4px;
+                border: 1px solid var(--border);
+                border-radius: 6px;
+                background: transparent;
+                color: var(--muted);
+                font-family: var(--mono);
+                font-size: 11px;
+                cursor: pointer;
+                text-align: center;
+                transition: all 0.15s;
+            }
+
+            .task-tab:hover {
+                border-color: var(--border-active);
+                color: var(--text);
+            }
+
+            .task-tab.active {
+                background: rgba(120, 180, 255, 0.1);
+                border-color: var(--accent);
+                color: var(--accent);
+            }
+
+            .task-tab .diff {
+                display: block;
+                font-size: 9px;
+                margin-top: 2px;
+                opacity: 0.7;
+            }
+
+            /* ── FIELDS ── */
+            .field {
+                margin-bottom: 14px;
+            }
+            .field:last-child {
+                margin-bottom: 0;
+            }
+
+            .field-label {
+                font-size: 10px;
+                color: var(--muted);
+                letter-spacing: 0.08em;
+                text-transform: uppercase;
+                margin-bottom: 5px;
+            }
+
+            .field-value {
+                font-size: 13px;
+                color: var(--text);
+                line-height: 1.5;
+            }
+
+            .badge {
+                display: inline-block;
+                font-size: 10px;
+                padding: 2px 8px;
+                border-radius: 3px;
+                font-weight: 500;
+                letter-spacing: 0.04em;
+            }
+
+            .badge-easy {
+                background: rgba(74, 222, 128, 0.12);
+                color: var(--green);
+                border: 1px solid rgba(74, 222, 128, 0.2);
+            }
+            .badge-medium {
+                background: rgba(251, 191, 36, 0.12);
+                color: var(--amber);
+                border: 1px solid rgba(251, 191, 36, 0.2);
+            }
+            .badge-hard {
+                background: rgba(248, 113, 113, 0.12);
+                color: var(--red);
+                border: 1px solid rgba(248, 113, 113, 0.2);
+            }
+
+            /* ── GESTURE SEQUENCE ── */
+            .gesture-seq {
+                display: flex;
+                flex-wrap: wrap;
+                gap: 6px;
+                margin-bottom: 14px;
+            }
+
+            .g-chip {
+                font-family: var(--mono);
+                font-size: 11px;
+                padding: 4px 10px;
+                border-radius: 4px;
+                border: 1px solid var(--border);
+                color: var(--muted);
+                background: var(--bg3);
+                transition: all 0.2s;
+                position: relative;
+            }
+
+            .g-chip.done {
+                border-color: rgba(74, 222, 128, 0.3);
+                color: var(--green);
+                background: rgba(74, 222, 128, 0.06);
+            }
+
+            .g-chip.active {
+                border-color: var(--accent);
+                color: var(--accent);
+                background: rgba(120, 180, 255, 0.1);
+                box-shadow: 0 0 12px rgba(120, 180, 255, 0.15);
+            }
+
+            /* ── CURRENT GESTURE ── */
+            .current-gesture {
+                font-family: var(--display);
+                font-size: 36px;
+                font-weight: 800;
+                color: #fff;
+                letter-spacing: -1px;
+                line-height: 1;
+                min-height: 40px;
+                transition: all 0.2s;
+            }
+
+            .current-gesture.empty {
+                color: var(--muted);
+                font-size: 20px;
+                font-weight: 400;
+                font-family: var(--mono);
+            }
+
+            /* ── METRICS ROW ── */
+            .metrics {
+                display: grid;
+                grid-template-columns: repeat(3, 1fr);
+                gap: 10px;
+                margin-bottom: 16px;
+            }
+
+            .metric {
+                background: var(--bg3);
+                border: 1px solid var(--border);
+                border-radius: 8px;
+                padding: 12px;
+                text-align: center;
+            }
+
+            .metric-val {
+                font-family: var(--display);
+                font-size: 22px;
+                font-weight: 700;
+                color: #fff;
+                line-height: 1;
+                margin-bottom: 4px;
+            }
+
+            .metric-val.green {
+                color: var(--green);
+            }
+            .metric-val.amber {
+                color: var(--amber);
+            }
+            .metric-val.blue {
+                color: var(--accent);
+            }
+
+            .metric-lbl {
+                font-size: 10px;
+                color: var(--muted);
+                letter-spacing: 0.06em;
+                text-transform: uppercase;
+            }
+
+            /* ── ACTION BUTTONS ── */
+            .action-grid {
+                display: grid;
+                grid-template-columns: 1fr 1fr;
+                gap: 8px;
+                margin-bottom: 14px;
+            }
+
+            .action-btn {
+                padding: 9px 12px;
+                border: 1px solid var(--border);
+                border-radius: 6px;
+                background: var(--bg3);
+                color: var(--text);
+                font-family: var(--mono);
+                font-size: 12px;
+                cursor: pointer;
+                text-align: left;
+                transition: all 0.15s;
+                line-height: 1.3;
+            }
+
+            .action-btn:hover {
+                border-color: var(--border-active);
+                background: rgba(120, 180, 255, 0.06);
+                color: var(--accent);
+            }
+
+            .action-btn:disabled {
+                opacity: 0.3;
+                cursor: not-allowed;
+            }
+
+            /* ── REWARD BAR ── */
+            .reward-section {
+                margin-bottom: 14px;
+            }
+
+            .reward-header {
+                display: flex;
+                justify-content: space-between;
+                align-items: baseline;
+                margin-bottom: 6px;
+            }
+
+            .reward-val {
+                font-family: var(--display);
+                font-size: 20px;
+                font-weight: 700;
+                color: #fff;
+                transition: color 0.2s;
+            }
+
+            .reward-val.pos {
+                color: var(--green);
+            }
+            .reward-val.neg {
+                color: var(--red);
+            }
+
+            .reward-track {
+                height: 5px;
+                background: var(--bg3);
+                border-radius: 3px;
+                overflow: hidden;
+                margin-bottom: 6px;
+            }
+
+            .reward-fill {
+                height: 100%;
+                border-radius: 3px;
+                transition:
+                    width 0.4s ease,
+                    background 0.2s;
+                background: var(--green);
+            }
+
+            .reward-fill.neg {
+                background: var(--red);
+            }
+
+            .reward-breakdown {
+                font-size: 10px;
+                color: var(--muted);
+                font-style: italic;
+            }
+
+            /* ── SCORE BAR ── */
+            .score-section {
+                border-top: 1px solid var(--border);
+                padding-top: 14px;
+                margin-top: 14px;
+            }
+
+            .score-header {
+                display: flex;
+                justify-content: space-between;
+                align-items: baseline;
+                margin-bottom: 6px;
+            }
+
+            .score-label {
+                font-size: 10px;
+                color: var(--muted);
+                text-transform: uppercase;
+                letter-spacing: 0.08em;
+            }
+
+            .score-val {
+                font-family: var(--display);
+                font-size: 24px;
+                font-weight: 800;
+                color: var(--accent2);
+            }
+
+            .score-track {
+                height: 5px;
+                background: var(--bg3);
+                border-radius: 3px;
+                overflow: hidden;
+            }
+
+            .score-fill {
+                height: 100%;
+                border-radius: 3px;
+                background: linear-gradient(
+                    90deg,
+                    var(--accent2),
+                    var(--accent)
+                );
+                transition: width 0.5s ease;
+            }
+
+            /* ── LOG ── */
+            .log-area {
+                font-family: var(--mono);
+                font-size: 11.5px;
+                line-height: 1.8;
+                max-height: 220px;
+                overflow-y: auto;
+                padding: 2px 0;
+            }
+
+            .log-area::-webkit-scrollbar {
+                width: 4px;
+            }
+            .log-area::-webkit-scrollbar-track {
+                background: transparent;
+            }
+            .log-area::-webkit-scrollbar-thumb {
+                background: var(--border);
+                border-radius: 2px;
+            }
+
+            .log-line {
+                padding: 1px 0;
+                border-radius: 2px;
+            }
+            .log-start {
+                color: var(--accent);
+            }
+            .log-step {
+                color: var(--text);
+            }
+            .log-step .step-num {
+                color: var(--muted);
+            }
+            .log-step .rew-pos {
+                color: var(--green);
+            }
+            .log-step .rew-neg {
+                color: var(--red);
+            }
+            .log-end.ok {
+                color: var(--green);
+            }
+            .log-end.fail {
+                color: var(--red);
+            }
+            .log-empty {
+                color: var(--muted);
+                font-style: italic;
+            }
+
+            /* ── BOTTOM CONTROLS ── */
+            .controls {
+                display: flex;
+                gap: 10px;
+                margin-top: 4px;
+            }
+
+            .btn {
+                padding: 9px 18px;
+                border-radius: 6px;
+                font-family: var(--mono);
+                font-size: 12px;
+                cursor: pointer;
+                transition: all 0.15s;
+                border: 1px solid var(--border);
+                background: var(--bg3);
+                color: var(--muted);
+            }
+
+            .btn:hover {
+                border-color: var(--border-active);
+                color: var(--text);
+            }
+
+            .btn-primary {
+                background: rgba(120, 180, 255, 0.12);
+                border-color: rgba(120, 180, 255, 0.3);
+                color: var(--accent);
+            }
+
+            .btn-primary:hover {
+                background: rgba(120, 180, 255, 0.2);
+            }
+
+            /* ── INTENT RESULT ── */
+            .intent-result {
+                padding: 10px 14px;
+                border-radius: 6px;
+                border: 1px solid var(--border);
+                background: var(--bg3);
+                font-size: 13px;
+                color: var(--muted);
+                min-height: 40px;
+                transition: all 0.2s;
+            }
+
+            .intent-result.correct {
+                border-color: rgba(74, 222, 128, 0.3);
+                background: rgba(74, 222, 128, 0.06);
+                color: var(--green);
+            }
+
+            .intent-result.wrong {
+                border-color: rgba(248, 113, 113, 0.3);
+                background: rgba(248, 113, 113, 0.06);
+                color: var(--red);
+            }
+
+            /* ── ENV URL ── */
+            .env-input-row {
+                display: flex;
+                gap: 8px;
+                align-items: center;
+            }
+
+            .env-input {
+                flex: 1;
+                background: var(--bg3);
+                border: 1px solid var(--border);
+                border-radius: 6px;
+                padding: 7px 12px;
+                font-family: var(--mono);
+                font-size: 12px;
+                color: var(--text);
+                outline: none;
+                transition: border-color 0.15s;
+            }
+
+            .env-input:focus {
+                border-color: var(--border-active);
+            }
+
+            /* ── SPAN FULL COL ── */
+            .span-left {
+                grid-column: 1;
+            }
+            .span-right {
+                grid-column: 2;
+            }
+            .span-full {
+                grid-column: 1 / -1;
+            }
+
+            /* ── FADE IN ── */
+            @keyframes fadeIn {
+                from {
+                    opacity: 0;
+                    transform: translateY(6px);
+                }
+                to {
+                    opacity: 1;
+                    transform: none;
+                }
+            }
+            .panel {
+                animation: fadeIn 0.3s ease both;
+            }
+            .panel:nth-child(2) {
+                animation-delay: 0.05s;
+            }
+            .panel:nth-child(3) {
+                animation-delay: 0.1s;
+            }
+            .panel:nth-child(4) {
+                animation-delay: 0.15s;
+            }
+
+            /* ── HISTORY TABLE ── */
+            .hist-table {
+                width: 100%;
+                border-collapse: collapse;
+                font-size: 11px;
+            }
+            .hist-table th {
+                text-align: left;
+                color: var(--muted);
+                font-weight: 400;
+                padding: 4px 8px;
+                border-bottom: 1px solid var(--border);
+                letter-spacing: 0.05em;
+                text-transform: uppercase;
+                font-size: 10px;
+            }
+            .hist-table td {
+                padding: 5px 8px;
+                border-bottom: 1px solid rgba(255, 255, 255, 0.03);
+                vertical-align: middle;
+            }
+            .hist-table tr:last-child td {
+                border-bottom: none;
+            }
+            .hist-correct {
+                color: var(--green);
+            }
+            .hist-wrong {
+                color: var(--red);
+            }
+        </style>
+    </head>
+    <body>
+        <div class="wrap">
+            <header>
+                <div class="header-inner">
+                    <div class="logo-block">
+                        <div class="logo">
+                            SLIE <span class="logo-tag">OpenEnv</span>
+                        </div>
+                        <div class="tagline">
+                            Sign Language Interaction Environment — agent
+                            evaluation benchmark
+                        </div>
+                    </div>
+                    <div class="status-bar">
+                        <span
+                            ><span class="status-dot" id="env-dot"></span
+                            ><span id="env-status">disconnected</span></span
+                        >
+                        <span style="color: var(--border)">|</span>
+                        <span id="env-version" style="color: var(--muted)"
+                            >v1.1.0</span
+                        >
+                    </div>
+                </div>
+            </header>
+
+            <!-- ENV URL row -->
+            <div
+                style="
+                    margin-bottom: 16px;
+                    display: flex;
+                    gap: 10px;
+                    align-items: center;
+                "
+            >
+                <input
+                    class="env-input"
+                    id="env-url"
+                    value="http://localhost:8000"
+                    placeholder="http://localhost:8000"
+                    style="max-width: 320px"
+                />
+                <button class="btn btn-primary" onclick="pingHealth()">
+                    Connect
+                </button>
+                <button class="btn" onclick="resetEpisode()">
+                    Reset episode
+                </button>
+            </div>
+
+            <div class="grid">
+                <!-- LEFT COL: Task config + gesture sequence -->
+                <div style="display: flex; flex-direction: column; gap: 16px">
+                    <div class="panel">
+                        <div class="panel-head">
+                            <span class="panel-title">Task</span>
+                            <span id="task-badge" class="badge badge-easy"
+                                >easy</span
+                            >
+                        </div>
+                        <div class="panel-body">
+                            <div class="task-tabs">
+                                <button
+                                    class="task-tab active"
+                                    data-task="task1"
+                                    onclick="switchTask('task1', this)"
+                                >
+                                    task1
+                                    <span class="diff">Command Recog.</span>
+                                </button>
+                                <button
+                                    class="task-tab"
+                                    data-task="task2"
+                                    onclick="switchTask('task2', this)"
+                                >
+                                    task2 <span class="diff">Multi-step</span>
+                                </button>
+                                <button
+                                    class="task-tab"
+                                    data-task="task3"
+                                    onclick="switchTask('task3', this)"
+                                >
+                                    task3
+                                    <span class="diff">Intent Infer.</span>
+                                </button>
+                            </div>
+
+                            <div class="field">
+                                <div class="field-label">Description</div>
+                                <div
+                                    class="field-value"
+                                    id="task-desc"
+                                    style="
+                                        font-size: 12px;
+                                        color: var(--muted);
+                                        line-height: 1.6;
+                                    "
+                                >
+                                    Interpret individual gestures. Each maps to
+                                    one clear intent.
+                                </div>
+                            </div>
+
+                            <div class="field">
+                                <div class="field-label">Gesture sequence</div>
+                                <div class="gesture-seq" id="gesture-seq"></div>
+                            </div>
+
+                            <div class="field">
+                                <div class="field-label">Current gesture</div>
+                                <div
+                                    class="current-gesture empty"
+                                    id="current-gesture"
+                                >
+                                    —
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="panel">
+                        <div class="panel-head">
+                            <span class="panel-title">Metrics</span>
+                        </div>
+                        <div class="panel-body">
+                            <div class="metrics">
+                                <div class="metric">
+                                    <div class="metric-val blue" id="m-steps">
+                                        0
+                                    </div>
+                                    <div class="metric-lbl">Steps</div>
+                                </div>
+                                <div class="metric">
+                                    <div
+                                        class="metric-val green"
+                                        id="m-correct"
+                                    >
+                                        0
+                                    </div>
+                                    <div class="metric-lbl">Correct</div>
+                                </div>
+                                <div class="metric">
+                                    <div
+                                        class="metric-val amber"
+                                        id="m-total-reward"
+                                    >
+                                        0.00
+                                    </div>
+                                    <div class="metric-lbl">Total reward</div>
+                                </div>
+                            </div>
+
+                            <div class="score-section">
+                                <div class="score-header">
+                                    <span class="score-label"
+                                        >Episode score</span
+                                    >
+                                    <span class="score-val" id="score-val"
+                                        >0.000</span
+                                    >
+                                </div>
+                                <div class="score-track">
+                                    <div
+                                        class="score-fill"
+                                        id="score-fill"
+                                        style="width: 0%"
+                                    ></div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- RIGHT COL: Actions + reward + log -->
+                <div style="display: flex; flex-direction: column; gap: 16px">
+                    <div class="panel">
+                        <div class="panel-head">
+                            <span class="panel-title">Agent action</span>
+                            <span style="font-size: 10px; color: var(--muted)"
+                                >click to submit</span
+                            >
+                        </div>
+                        <div class="panel-body">
+                            <div class="action-grid" id="action-grid">
+                                <div
+                                    style="
+                                        grid-column: 1/-1;
+                                        color: var(--muted);
+                                        font-size: 12px;
+                                        font-style: italic;
+                                    "
+                                >
+                                    Connect to environment and reset to begin.
+                                </div>
+                            </div>
+
+                            <div class="field">
+                                <div class="field-label">Last result</div>
+                                <div class="intent-result" id="intent-result">
+                                    Waiting for action...
+                                </div>
+                            </div>
+
+                            <div class="reward-section">
+                                <div class="reward-header">
+                                    <span class="field-label" style="margin: 0"
+                                        >Step reward</span
+                                    >
+                                    <span class="reward-val" id="reward-val"
+                                        >—</span
+                                    >
+                                </div>
+                                <div class="reward-track">
+                                    <div
+                                        class="reward-fill"
+                                        id="reward-fill"
+                                        style="width: 0%"
+                                    ></div>
+                                </div>
+                                <div
+                                    class="reward-breakdown"
+                                    id="reward-breakdown"
+                                ></div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="panel" style="flex: 1">
+                        <div class="panel-head">
+                            <span class="panel-title">stdout log</span>
+                            <span style="font-size: 10px; color: var(--muted)"
+                                >[START] · [STEP] · [END]</span
+                            >
+                        </div>
+                        <div class="panel-body">
+                            <div class="log-area" id="log-area">
+                                <div class="log-line log-empty">
+                                    // connect to env and reset to start a
+                                    session
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="panel">
+                        <div class="panel-head">
+                            <span class="panel-title">Step history</span>
+                        </div>
+                        <div class="panel-body" style="padding: 0">
+                            <div
+                                style="
+                                    overflow-x: auto;
+                                    max-height: 160px;
+                                    overflow-y: auto;
+                                "
+                            >
+                                <table class="hist-table" id="hist-table">
+                                    <thead>
+                                        <tr>
+                                            <th>#</th>
+                                            <th>Gesture</th>
+                                            <th>Intent submitted</th>
+                                            <th>Expected</th>
+                                            <th>Reward</th>
+                                            <th>OK?</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="hist-body">
+                                        <tr>
+                                            <td
+                                                colspan="6"
+                                                style="
+                                                    color: var(--muted);
+                                                    font-style: italic;
+                                                    padding: 12px 8px;
+                                                "
+                                            >
+                                                No steps yet
+                                            </td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <script>
+            const TASKS = {
+                task1: {
+                    desc: "Interpret individual gestures. Each maps to one clear intent.",
+                    badge: "easy",
+                    badgeClass: "badge-easy",
+                    sequence: ["HELLO", "YES", "STOP", "HELP", "GOODBYE"],
+                    steps: [
+                        {
+                            gesture: "HELLO",
+                            expected: "greeting",
+                            aliases: ["hello", "hi", "welcome"],
+                            keywords: ["hello", "hi", "help"],
+                            choices: [
+                                "greeting",
+                                "farewell",
+                                "halt",
+                                "unknown",
+                            ],
+                        },
+                        {
+                            gesture: "YES",
+                            expected: "confirm",
+                            aliases: ["yes", "agree", "ok"],
+                            keywords: ["yes", "confirm", "ok"],
+                            choices: ["confirm", "deny", "greeting", "halt"],
+                        },
+                        {
+                            gesture: "STOP",
+                            expected: "halt",
+                            aliases: ["stop", "pause", "end"],
+                            keywords: ["stop", "halt", "pause"],
+                            choices: [
+                                "halt",
+                                "play_action",
+                                "confirm",
+                                "unknown",
+                            ],
+                        },
+                        {
+                            gesture: "HELP",
+                            expected: "request_help",
+                            aliases: ["help", "assist", "support"],
+                            keywords: ["help", "assist"],
+                            choices: [
+                                "request_help",
+                                "farewell",
+                                "open_action",
+                                "deny",
+                            ],
+                        },
+                        {
+                            gesture: "GOODBYE",
+                            expected: "farewell",
+                            aliases: ["bye", "goodbye", "exit"],
+                            keywords: ["goodbye", "bye"],
+                            choices: [
+                                "farewell",
+                                "greeting",
+                                "halt",
+                                "confirm",
+                            ],
+                        },
+                    ],
+                },
+                task2: {
+                    desc: "Track context across gesture sequences. Gestures build on each other — earlier ones affect interpretation of later ones.",
+                    badge: "medium",
+                    badgeClass: "badge-medium",
+                    sequence: [
+                        "OPEN",
+                        "YOUTUBE",
+                        "SEARCH",
+                        "MUSIC",
+                        "PLAY",
+                        "LOUDER",
+                        "STOP",
+                        "CLOSE",
+                    ],
+                    steps: [
+                        {
+                            gesture: "OPEN",
+                            expected: "open_action",
+                            aliases: ["open", "start", "launch"],
+                            keywords: ["open", "launch"],
+                            choices: [
+                                "open_action",
+                                "close_action",
+                                "halt",
+                                "unknown",
+                            ],
+                        },
+                        {
+                            gesture: "YOUTUBE",
+                            expected: "select_app:youtube",
+                            aliases: ["youtube", "open_youtube"],
+                            keywords: ["youtube"],
+                            choices: [
+                                "select_app:youtube",
+                                "select_app:maps",
+                                "greeting",
+                                "confirm",
+                            ],
+                        },
+                        {
+                            gesture: "SEARCH",
+                            expected: "search_action",
+                            aliases: ["search", "find"],
+                            keywords: ["search", "find"],
+                            choices: [
+                                "search_action",
+                                "play_action",
+                                "halt",
+                                "open_action",
+                            ],
+                        },
+                        {
+                            gesture: "MUSIC",
+                            expected: "search_query:music",
+                            aliases: ["music", "songs"],
+                            keywords: ["music", "songs"],
+                            choices: [
+                                "search_query:music",
+                                "search_query:food",
+                                "request_help",
+                                "halt",
+                            ],
+                        },
+                        {
+                            gesture: "PLAY",
+                            expected: "play_action",
+                            aliases: ["play", "start", "resume"],
+                            keywords: ["play", "playing"],
+                            choices: [
+                                "play_action",
+                                "halt",
+                                "confirm",
+                                "open_action",
+                            ],
+                        },
+                        {
+                            gesture: "LOUDER",
+                            expected: "increase_volume",
+                            aliases: ["louder", "volume_up"],
+                            keywords: ["volume", "louder"],
+                            choices: [
+                                "increase_volume",
+                                "decrease_volume",
+                                "halt",
+                                "play_action",
+                            ],
+                        },
+                        {
+                            gesture: "STOP",
+                            expected: "halt",
+                            aliases: ["stop", "pause"],
+                            keywords: ["stop", "pause"],
+                            choices: [
+                                "halt",
+                                "play_action",
+                                "confirm",
+                                "close_action",
+                            ],
+                        },
+                        {
+                            gesture: "CLOSE",
+                            expected: "close_action",
+                            aliases: ["close", "exit", "quit"],
+                            keywords: ["close", "exit"],
+                            choices: [
+                                "close_action",
+                                "open_action",
+                                "halt",
+                                "farewell",
+                            ],
+                        },
+                    ],
+                },
+                task3: {
+                    desc: "Infer compound intent from ambiguous gesture combinations. The final step must synthesize all prior gestures into one unified intent.",
+                    badge: "hard",
+                    badgeClass: "badge-hard",
+                    sequence: ["FOOD", "NEAR", "NOW"],
+                    steps: [
+                        {
+                            gesture: "FOOD",
+                            expected: "find_nearby_restaurants",
+                            aliases: ["find_restaurant", "food_nearby"],
+                            keywords: ["food", "restaurant"],
+                            choices: [
+                                "find_nearby_restaurants",
+                                "request_food",
+                                "play_action",
+                                "greeting",
+                            ],
+                        },
+                        {
+                            gesture: "NEAR",
+                            expected: "find_nearby_restaurants",
+                            aliases: ["nearby_food", "restaurant_near"],
+                            keywords: ["nearby", "food"],
+                            choices: [
+                                "find_nearby_restaurants",
+                                "navigate_home",
+                                "unknown",
+                                "confirm",
+                            ],
+                        },
+                        {
+                            gesture: "NOW",
+                            expected: "find_nearby_restaurants",
+                            aliases: ["food_nearby", "nearby_food"],
+                            keywords: ["restaurant", "nearby"],
+                            choices: [
+                                "find_nearby_restaurants",
+                                "request_cold_water_immediately",
+                                "emergency_call",
+                                "unknown",
+                            ],
+                        },
+                    ],
+                },
+            };
+
+            let state = {
+                taskId: "task1",
+                gestureIndex: 0,
+                stepCount: 0,
+                correct: 0,
+                totalReward: 0,
+                rewards: [],
+                done: false,
+                lastIntent: null,
+                history: [],
+                connected: false,
+                useLocalSim: true, // true = simulate locally, false = real HTTP calls
+            };
+
+            function getEnvUrl() {
+                return document.getElementById("env-url").value.trim();
+            }
+
+            // ── HEALTH CHECK ──
+            async function pingHealth() {
+                const url = getEnvUrl();
+                setStatus("connecting...");
+                try {
+                    const r = await fetch(`${url}/health`, {
+                        signal: AbortSignal.timeout(3000),
+                    });
+                    if (r.ok) {
+                        const d = await r.json();
+                        setStatus("connected", true);
+                        state.connected = true;
+                        state.useLocalSim = false;
+                        appendLog(
+                            `<div class="log-line" style="color:var(--accent)">// connected to ${url} — env=${d.environment} v${d.version}</div>`,
+                        );
+                    } else {
+                        throw new Error(`status ${r.status}`);
+                    }
+                } catch (e) {
+                    setStatus("disconnected — running in sim mode");
+                    state.connected = false;
+                    state.useLocalSim = true;
+                    appendLog(
+                        `<div class="log-line" style="color:var(--amber)">// env unreachable — using local simulation</div>`,
+                    );
+                }
+            }
+
+            function setStatus(msg, ok) {
+                document.getElementById("env-status").textContent = msg;
+                const dot = document.getElementById("env-dot");
+                dot.className = "status-dot" + (ok ? " live" : "");
+            }
+
+            // ── TASK SWITCH ──
+            function switchTask(taskId, el) {
+                document
+                    .querySelectorAll(".task-tab")
+                    .forEach((t) => t.classList.remove("active"));
+                el.classList.add("active");
+                state.taskId = taskId;
+                resetEpisode();
+            }
+
+            // ── RESET ──
+            async function resetEpisode() {
+                const t = TASKS[state.taskId];
+                state = {
+                    ...state,
+                    gestureIndex: 0,
+                    stepCount: 0,
+                    correct: 0,
+                    totalReward: 0,
+                    rewards: [],
+                    done: false,
+                    lastIntent: null,
+                    history: [],
+                };
+
+                clearLog();
+                appendLog(
+                    `<div class="log-line log-start">[START] task=${state.taskId} env=slie model=Qwen/Qwen2.5-72B-Instruct</div>`,
+                );
+
+                if (!state.useLocalSim) {
+                    try {
+                        await fetch(`${getEnvUrl()}/reset`, {
+                            method: "POST",
+                            headers: { "Content-Type": "application/json" },
+                            body: JSON.stringify({
+                                task_id: state.taskId,
+                                episode_seed: 0,
+                            }),
+                        });
+                    } catch (e) {}
+                }
+
+                render();
+            }
+
+            // ── SUBMIT ACTION ──
+            async function submitAction(intent, stepSpec) {
+                if (state.done) return;
+                const t = TASKS[state.taskId];
+
+                state.stepCount++;
+
+                const expected = stepSpec.expected.toLowerCase();
+                const aliases = stepSpec.aliases.map((a) => a.toLowerCase());
+                const keywords = stepSpec.keywords;
+                const agentIntent = intent.toLowerCase();
+
+                const isCorrect =
+                    agentIntent === expected || aliases.includes(agentIntent);
+                const intentR = isCorrect ? 0.4 : 0.0;
+                const responseR = 0.3;
+                const isFinal = state.gestureIndex === t.sequence.length - 1;
+                const completionBonus = isFinal && isCorrect ? 0.3 : 0.0;
+                const loopPenalty =
+                    state.lastIntent === intent && state.stepCount > 1
+                        ? -0.5
+                        : 0.0;
+                const reward = Math.max(
+                    -1,
+                    Math.min(
+                        1,
+                        intentR + responseR + completionBonus + loopPenalty,
+                    ),
+                );
+
+                const gesture = stepSpec.gesture;
+                state.rewards.push(reward);
+                state.totalReward = parseFloat(
+                    (state.totalReward + reward).toFixed(4),
+                );
+                state.lastIntent = intent;
+                if (isCorrect) state.correct++;
+
+                const parts = [];
+                if (intentR > 0) parts.push(`intent +${intentR.toFixed(1)}`);
+                if (responseR > 0)
+                    parts.push(`response +${responseR.toFixed(1)}`);
+                if (completionBonus > 0)
+                    parts.push(`completion +${completionBonus.toFixed(1)}`);
+                if (loopPenalty < 0)
+                    parts.push(`loop ${loopPenalty.toFixed(1)}`);
+                const breakdown = parts.join(" · ");
+
+                state.history.push({
+                    step: state.stepCount,
+                    gesture,
+                    intent,
+                    expected: stepSpec.expected,
+                    reward,
+                    correct: isCorrect,
+                });
+                state.gestureIndex++;
+
+                const done =
+                    state.gestureIndex >= t.sequence.length ||
+                    state.stepCount >= 10;
+                state.done = done;
+
+                // update intent result
+                const box = document.getElementById("intent-result");
+                box.className =
+                    "intent-result " + (isCorrect ? "correct" : "wrong");
+                box.textContent =
+                    (isCorrect ? "✓ " : "✗ ") +
+                    `intent: "${intent}"` +
+                    (loopPenalty < 0 ? "  [loop penalty]" : "");
+
+                // reward bar
+                const rewardEl = document.getElementById("reward-val");
+                rewardEl.textContent = reward.toFixed(2);
+                rewardEl.className =
+                    "reward-val " + (reward >= 0 ? "pos" : "neg");
+                const fill = document.getElementById("reward-fill");
+                fill.className = "reward-fill" + (reward < 0 ? " neg" : "");
+                fill.style.width = (Math.abs(reward) * 100).toFixed(1) + "%";
+                document.getElementById("reward-breakdown").textContent =
+                    breakdown;
+
+                // log
+                const doneStr = done ? "true" : "false";
+                appendLog(
+                    `<div class="log-line log-step"><span class="step-num">[STEP]</span> step=${state.stepCount} action=${intent} <span class="${reward >= 0 ? "rew-pos" : "rew-neg"}">reward=${reward.toFixed(2)}</span> done=${doneStr} error=null</div>`,
+                );
+
+                if (!state.useLocalSim) {
+                    try {
+                        await fetch(`${getEnvUrl()}/step`, {
+                            method: "POST",
+                            headers: { "Content-Type": "application/json" },
+                            body: JSON.stringify({
+                                intent,
+                                confidence: 0.9,
+                                response: `Executing: ${intent}`,
+                            }),
+                        });
+                    } catch (e) {}
+                }
+
+                if (done) {
+                    const finalScore = Math.min(
+                        1,
+                        state.correct / t.sequence.length,
+                    );
+                    const success = finalScore >= 0.5;
+                    appendLog(
+                        `<div class="log-line log-end ${success ? "ok" : "fail"}">[END] success=${success} steps=${state.stepCount} score=${finalScore.toFixed(3)} rewards=${state.rewards.map((r) => r.toFixed(2)).join(",")}</div>`,
+                    );
+                }
+
+                render();
+            }
+
+            // ── RENDER ──
+            function render() {
+                const t = TASKS[state.taskId];
+
+                // task badge
+                document.getElementById("task-badge").className =
+                    `badge ${t.badgeClass}`;
+                document.getElementById("task-badge").textContent = t.badge;
+                document.getElementById("task-desc").textContent = t.desc;
+
+                // gesture sequence pills
+                const seq = document.getElementById("gesture-seq");
+                seq.innerHTML = t.sequence
+                    .map((g, i) => {
+                        let cls = "g-chip";
+                        if (i < state.gestureIndex) cls += " done";
+                        else if (i === state.gestureIndex && !state.done)
+                            cls += " active";
+                        return `<span class="${cls}">${g}</span>`;
+                    })
+                    .join("");
+
+                // current gesture
+                const cg = document.getElementById("current-gesture");
+                if (state.done) {
+                    cg.textContent = "done";
+                    cg.className = "current-gesture empty";
+                } else {
+                    const cur = t.steps[state.gestureIndex];
+                    if (cur) {
+                        cg.textContent = cur.gesture;
+                        cg.className = "current-gesture";
+                    }
+                }
+
+                // metrics
+                document.getElementById("m-steps").textContent =
+                    state.stepCount;
+                document.getElementById("m-correct").textContent =
+                    state.correct;
+                document.getElementById("m-total-reward").textContent =
+                    state.totalReward.toFixed(2);
+
+                // score
+                const finalScore =
+                    state.stepCount > 0
+                        ? Math.min(1, state.correct / t.sequence.length)
+                        : 0;
+                document.getElementById("score-val").textContent =
+                    finalScore.toFixed(3);
+                document.getElementById("score-fill").style.width =
+                    (finalScore * 100).toFixed(1) + "%";
+
+                // action buttons
+                const ag = document.getElementById("action-grid");
+                if (state.done) {
+                    ag.innerHTML = `<div style="grid-column:1/-1; color:var(--muted); font-size:12px; font-style:italic;">Episode complete — reset to start again.</div>`;
+                } else {
+                    const step = t.steps[state.gestureIndex];
+                    if (step) {
+                        ag.innerHTML = step.choices
+                            .map(
+                                (c) =>
+                                    `<button class="action-btn" onclick="submitAction('${c}', ${JSON.stringify(step)})">${c}</button>`,
+                            )
+                            .join("");
+                    }
+                }
+
+                // history table
+                const tbody = document.getElementById("hist-body");
+                if (state.history.length === 0) {
+                    tbody.innerHTML = `<tr><td colspan="6" style="color:var(--muted); font-style:italic; padding:12px 8px;">No steps yet</td></tr>`;
+                } else {
+                    tbody.innerHTML = [...state.history]
+                        .reverse()
+                        .map(
+                            (h) =>
+                                `<tr>
+        <td style="color:var(--muted)">${h.step}</td>
+        <td style="color:var(--accent)">${h.gesture}</td>
+        <td>${h.intent}</td>
+        <td style="color:var(--muted)">${h.expected}</td>
+        <td class="${h.reward >= 0 ? "hist-correct" : "hist-wrong"}">${h.reward.toFixed(2)}</td>
+        <td class="${h.correct ? "hist-correct" : "hist-wrong"}">${h.correct ? "✓" : "✗"}</td>
+      </tr>`,
+                        )
+                        .join("");
+                }
+            }
+
+            function clearLog() {
+                document.getElementById("log-area").innerHTML = "";
+            }
+
+            function appendLog(html) {
+                const el = document.getElementById("log-area");
+                el.insertAdjacentHTML("beforeend", html);
+                el.scrollTop = el.scrollHeight;
+            }
+
+            // init
+            resetEpisode();
+            setStatus("disconnected");
+        </script>
+    </body>
+</html>
