@@ -2,6 +2,7 @@ from __future__ import annotations
 
 from fastapi import FastAPI, HTTPException
 from fastapi.responses import JSONResponse
+from fastapi.staticfiles import StaticFiles
 
 from slie.env import SLIEEnvironment
 from slie.models import (
@@ -47,3 +48,6 @@ def step(action: SLIEAction) -> StepResponse:
 @app.get("/state", response_model=StateResponse)
 def state() -> StateResponse:
     return env.get_state()
+
+
+app.mount("/", StaticFiles(directory=".", html=True), name="static")
