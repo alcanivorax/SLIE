@@ -762,7 +762,7 @@
                 <input
                     class="env-input"
                     id="env-url"
-                    value="http://localhost:8000"
+                    value=""
                     placeholder="http://localhost:8000"
                     style="max-width: 320px"
                 />
@@ -1251,8 +1251,20 @@
                 useLocalSim: true, // true = simulate locally, false = real HTTP calls
             };
 
+            function detectDefaultEnvUrl() {
+                if (
+                    window.location.protocol.startsWith("http") &&
+                    window.location.host
+                ) {
+                    return `${window.location.protocol}//${window.location.host}`;
+                }
+                return "http://localhost:8000";
+            }
+
             function getEnvUrl() {
-                return document.getElementById("env-url").value.trim();
+                const input = document.getElementById("env-url");
+                const value = input.value.trim();
+                return value || detectDefaultEnvUrl();
             }
 
             // ── HEALTH CHECK ──
@@ -1278,9 +1290,13 @@
                     setStatus("disconnected — running in sim mode");
                     state.connected = false;
                     state.useLocalSim = true;
-                    appendLog(
-                        `<div class="log-line" style="color:var(--amber)">// env unreachable — using local simulation</div>`,
-                    );
+                    const logArea = document.getElementById("log-area");
+                    const marker = "env unreachable — using local simulation";
+                    if (!logArea.textContent.includes(marker)) {
+                        appendLog(
+                            `<div class="log-line" style="color:var(--amber)">// ${marker}</div>`,
+                        );
+                    }
                 }
             }
 
@@ -1516,7 +1532,7 @@
                         ag.innerHTML = step.choices
                             .map(
                                 (c) =>
-                                    `<button class="action-btn" onclick="submitAction('${c}', ${JSON.stringify(step)})">${c}</button>`,
+                                    `<button class="action-btn" onclick='submitAction(${JSON.stringify(c)}, ${JSON.stringify(step)})'>${c}</button>`,
                             )
                             .join("");
                     }
@@ -1555,6 +1571,7 @@
             }
 
             // init
+            document.getElementById("env-url").value = detectDefaultEnvUrl();
             resetEpisode();
             setStatus("disconnected");
         </script>
