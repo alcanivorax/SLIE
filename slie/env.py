@@ -2,7 +2,7 @@ from __future__ import annotations
 
 from slie.data_loader import get_scenario, load_gestures, load_tasks
 from slie.gesture_layer import GestureInputLayer
-from slie.graders import compute_final_score
+from slie.graders import compute_final_score, compute_task3_breakdown
 from slie.models import ResetResponse, SLIEAction, SLIEInfo, StateResponse, StepResponse
 from slie.reward import compute_reward
 from slie.state import EnvironmentState
@@ -18,7 +18,12 @@ class SLIEEnvironment:
     def reset(self, task_id: str, episode_seed: int) -> ResetResponse:
         scenario_id = episode_seed % 5
         scenario = get_scenario(task_id, scenario_id, self.tasks)
-        self.gesture_layer = GestureInputLayer(self.gestures, scenario)
+        self.gesture_layer = GestureInputLayer(
+            self.gestures,
+            scenario,
+            episode_seed=episode_seed,
+            task_id=task_id,
+        )
         self.state.reset_state(
             task_id, episode_seed, scenario_id, scenario["gesture_sequence"]
         )
@@ -119,6 +124,10 @@ class SLIEEnvironment:
             intent_correct=intent_correct,
             response_keywords_matched=reward_debug.get("matched_keywords", []),
             final_score=self.state.final_score if self.state.done else None,
+            grader_version="v2.1",
+            sub_scores=compute_task3_breakdown(self.state)
+            if self.state.done and self.state.task_id == "task3"
+            else None,
             error=None,
         )
 

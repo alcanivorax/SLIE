@@ -76,6 +76,8 @@ class SLIEInfo(BaseModel):
     # Keywords matched in the agent response
     response_keywords_matched: list[str] = Field(default_factory=list)
     final_score: float | None = None
+    grader_version: str = "v1"
+    sub_scores: dict[str, float] | None = None
     error: str | None = None
 
 

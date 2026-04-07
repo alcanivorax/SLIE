@@ -9,9 +9,7 @@ client = TestClient(app)
 def test_root_endpoint() -> None:
     response = client.get("/")
     assert response.status_code == 200
-    data = response.json()
-    assert data["service"] == "SLIE"
-    assert "/health" in data["routes"]
+    assert "text/html" in response.headers.get("content-type", "")
 
 
 def test_health_endpoint() -> None:

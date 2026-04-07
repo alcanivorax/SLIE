@@ -41,7 +41,7 @@ def check_data_and_layer() -> None:
     check(len(s2["gesture_sequence"]) == 8, "task2 scenario length must be 8")
     check(len(s3["gesture_sequence"]) == 3, "task3 scenario length must be 3")
 
-    layer = GestureInputLayer(gestures, s1)
+    layer = GestureInputLayer(gestures, s1, episode_seed=0, task_id="task1")
     obs = layer.get_observation(0, 0, [], "task1")
     check(len(obs.gesture_embedding) == 64, "task1 observation must include 64-dim embedding")
     check(len(obs.hand_landmarks) == 6, "task1 observation must include 6 landmark frames")

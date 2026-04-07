@@ -1,6 +1,6 @@
-fastapi==0.111.0
-uvicorn==0.29.0
-pydantic==2.7.1
-requests==2.31.0
-openai==1.30.0
-pytest==8.2.1
+fastapi>=0.111,<1
+uvicorn>=0.29,<1
+pydantic>=2.12,<3
+requests>=2.31,<3
+openai>=2.7.2,<3
+pytest>=8.2,<9

@@ -1,5 +1,7 @@
 from __future__ import annotations
 
+import hashlib
+
 from slie.models import (
     GESTURE_EMBEDDING_LENGTH,
     HAND_LANDMARK_POINTS,
@@ -18,11 +20,19 @@ _ZERO_FRAME = HandFrame(left_hand=_ZERO_HAND, right_hand=_ZERO_HAND)
 class GestureInputLayer:
     """Provides observations from a pre-baked gesture sequence."""
 
-    def __init__(self, gestures: dict, scenario: dict) -> None:
+    def __init__(
+        self,
+        gestures: dict,
+        scenario: dict,
+        episode_seed: int,
+        task_id: str,
+    ) -> None:
         self.gestures = gestures
         self.scenario = scenario
         self.sequence: list[str] = scenario["gesture_sequence"]
         self.steps: list[dict] = scenario["steps"]
+        self.episode_seed = episode_seed
+        self.task_id = task_id
 
     def get_observation(
         self,
@@ -60,19 +70,39 @@ class GestureInputLayer:
         embedding = gesture_data.get("frame_features", _ZERO_EMBEDDING)
         if len(embedding) != GESTURE_EMBEDDING_LENGTH:
             embedding = (embedding + _ZERO_EMBEDDING)[:GESTURE_EMBEDDING_LENGTH]
+        embedding = [
+            self._jitter_unit(
+                float(v),
+                magnitude=0.015,
+                key=f"emb:{gesture_label}:{gesture_index}:{idx}",
+            )
+            for idx, v in enumerate(embedding)
+        ]
 
         # Build one landmark frame from the gesture data if available
         raw_landmarks = gesture_data.get("hand_landmarks", [])
         if raw_landmarks:
             frames: list[HandFrame] = []
-            for frame_data in raw_landmarks[
-                :1
-            ]:  # use only first frame to keep payload small
-                left = self._parse_hand(frame_data.get("left_hand", []))
-                right = self._parse_hand(frame_data.get("right_hand", []))
+            for frame_idx, frame_data in enumerate(raw_landmarks[
+                :6
+            ]):  # preserve full deterministic frame sequence
+                left = self._parse_hand(
+                    frame_data.get("left_hand", []),
+                    gesture_label=gesture_label,
+                    gesture_index=gesture_index,
+                    frame_index=frame_idx,
+                    hand_name="left",
+                )
+                right = self._parse_hand(
+                    frame_data.get("right_hand", []),
+                    gesture_label=gesture_label,
+                    gesture_index=gesture_index,
+                    frame_index=frame_idx,
+                    hand_name="right",
+                )
                 frames.append(HandFrame(left_hand=left, right_hand=right))
         else:
-            frames = [_ZERO_FRAME]
+            frames = [_ZERO_FRAME] * 6
 
         return SLIEObservation(
             detected_gesture=detected_gesture,
@@ -92,16 +122,46 @@ class GestureInputLayer:
             }
         return self.steps[gesture_index]
 
-    @staticmethod
-    def _parse_hand(raw: list[dict]) -> list[LandmarkPoint]:
-        points = [
-            LandmarkPoint(
-                x=float(p.get("x", 0.0)),
-                y=float(p.get("y", 0.0)),
-                z=float(p.get("z", 0.0)),
+    def _noise_unit(self, key: str) -> float:
+        token = (
+            f"{self.task_id}|{self.episode_seed}|{self.scenario.get('id', 0)}|{key}"
+        ).encode("utf-8")
+        digest = hashlib.sha256(token).digest()
+        # map first 8 bytes to [-1, 1]
+        value = int.from_bytes(digest[:8], byteorder="big", signed=False)
+        ratio = value / float((1 << 64) - 1)
+        return ratio * 2.0 - 1.0
+
+    def _jitter_unit(self, value: float, magnitude: float, key: str) -> float:
+        return max(0.0, min(1.0, value + self._noise_unit(key) * magnitude))
+
+    def _jitter_depth(self, value: float, magnitude: float, key: str) -> float:
+        return max(-1.0, min(1.0, value + self._noise_unit(key) * magnitude))
+
+    def _parse_hand(
+        self,
+        raw: list[dict],
+        gesture_label: str,
+        gesture_index: int,
+        frame_index: int,
+        hand_name: str,
+    ) -> list[LandmarkPoint]:
+        points: list[LandmarkPoint] = []
+        for point_idx, p in enumerate(raw):
+            base_key = (
+                f"lm:{gesture_label}:{gesture_index}:{frame_index}:{hand_name}:{point_idx}"
             )
-            for p in raw
-        ]
+            # deterministic "sensor dropout" on a subset of points
+            if self._noise_unit(base_key + ":drop") < -0.78:
+                points.append(LandmarkPoint(x=0.0, y=0.0, z=0.0))
+                continue
+            points.append(
+                LandmarkPoint(
+                    x=self._jitter_unit(float(p.get("x", 0.0)), 0.012, base_key + ":x"),
+                    y=self._jitter_unit(float(p.get("y", 0.0)), 0.012, base_key + ":y"),
+                    z=self._jitter_depth(float(p.get("z", 0.0)), 0.02, base_key + ":z"),
+                )
+            )
         if len(points) < HAND_LANDMARK_POINTS:
             points += [_ZERO_POINT] * (HAND_LANDMARK_POINTS - len(points))
         return points[:HAND_LANDMARK_POINTS]
