@@ -25,3 +25,10 @@ def test_reset_endpoint() -> None:
     data = response.json()
     assert len(data["observation"]["gesture_embedding"]) == 64
     assert len(data["observation"]["hand_landmarks"]) == 6
+
+
+def test_reset_endpoint_without_body() -> None:
+    response = client.post("/reset")
+    assert response.status_code == 200
+    data = response.json()
+    assert data["task_id"] == "task1"

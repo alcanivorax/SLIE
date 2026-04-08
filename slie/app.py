@@ -1,6 +1,9 @@
 from __future__ import annotations
 
+from typing import Annotated
+
 from fastapi import FastAPI, HTTPException
+from fastapi import Body
 from fastapi.responses import JSONResponse
 from fastapi.staticfiles import StaticFiles
 
@@ -27,9 +30,10 @@ def health() -> dict:
 
 
 @app.post("/reset", response_model=ResetResponse)
-def reset(request: ResetRequest) -> ResetResponse:
+def reset(request: Annotated[ResetRequest | None, Body()] = None) -> ResetResponse:
+    payload = request or ResetRequest()
     try:
-        return env.reset(task_id=request.task_id, episode_seed=request.episode_seed)
+        return env.reset(task_id=payload.task_id, episode_seed=payload.episode_seed)
     except Exception as exc:
         raise HTTPException(status_code=500, detail=str(exc)) from exc
 
