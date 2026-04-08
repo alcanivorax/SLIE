@@ -1,7 +1,5 @@
 from __future__ import annotations
 
-from typing import Annotated
-
 from fastapi import FastAPI, HTTPException
 from fastapi import Body
 from fastapi.responses import JSONResponse
@@ -30,7 +28,7 @@ def health() -> dict:
 
 
 @app.post("/reset", response_model=ResetResponse)
-def reset(request: Annotated[ResetRequest | None, Body()] = None) -> ResetResponse:
+def reset(request: ResetRequest | None = Body(default=None)) -> ResetResponse:
     payload = request or ResetRequest()
     try:
         return env.reset(task_id=payload.task_id, episode_seed=payload.episode_seed)
