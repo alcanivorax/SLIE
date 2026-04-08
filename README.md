@@ -1,3 +1,13 @@
+---
+title: SLIE
+emoji: 🤟
+colorFrom: blue
+colorTo: indigo
+sdk: docker
+app_port: 8000
+pinned: false
+---
+
 # SLIE — Sign Language Interaction Environment
 
 SLIE is a real-world OpenEnv environment for evaluating agents that interpret sign-language gesture streams and convert them into assistive actions. The environment models a practical accessibility workflow: a deaf or hard-of-hearing user communicates intent through gestures, and an agent must infer, track context, and respond correctly over multi-step interaction.
