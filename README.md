@@ -105,6 +105,10 @@ Required environment variables:
 - `ENV_URL` (optional, default `http://localhost:8000`)
 - `EPISODES_PER_TASK` (optional, default `3`)
 
+Note:
+- The project always uses the OpenAI Python client.
+- `API_BASE_URL` decides provider routing. With `https://router.huggingface.co/v1`, both Qwen and DeepSeek model IDs are valid in `MODEL_NAME`.
+
 Run:
 
 ```bash
