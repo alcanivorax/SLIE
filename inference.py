@@ -31,8 +31,10 @@ _load_local_env_file()
 ENV_URL = os.getenv("ENV_URL", "http://localhost:8000")
 API_BASE_URL = os.getenv("API_BASE_URL", "https://router.huggingface.co/v1")
 MODEL_NAME = os.getenv("MODEL_NAME", "Qwen/Qwen2.5-72B-Instruct")
-HF_TOKEN = os.getenv("HF_TOKEN", "")
-OPENAI_API_KEY = os.getenv("OPENAI_API_KEY", "")
+HF_TOKEN = os.getenv("HF_TOKEN")
+OPENAI_API_KEY = os.getenv("OPENAI_API_KEY")
+# Optional variable for docker-image based env bootstrapping flows.
+LOCAL_IMAGE_NAME = os.getenv("LOCAL_IMAGE_NAME")
 MAX_STEPS = 10
 SUCCESS_THRESHOLD = 0.5
 EPISODES_PER_TASK = max(1, int(os.getenv("EPISODES_PER_TASK", "3")))
@@ -475,7 +477,7 @@ def run_task(client: OpenAI, env_url: str, task_id: str, seed: int) -> float:
 
 
 def main() -> None:
-    api_key = HF_TOKEN.strip() or OPENAI_API_KEY.strip()
+    api_key = (HF_TOKEN or "").strip() or (OPENAI_API_KEY or "").strip()
     if not api_key:
         raise RuntimeError(
             "Missing API key. Set HF_TOKEN (preferred) or OPENAI_API_KEY before running inference.py."

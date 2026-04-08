@@ -104,6 +104,7 @@ Required environment variables:
 - `HF_TOKEN` (preferred) or `OPENAI_API_KEY`
 - `ENV_URL` (optional, default `http://localhost:8000`)
 - `EPISODES_PER_TASK` (optional, default `3`)
+- `LOCAL_IMAGE_NAME` (optional; only for `from_docker_image()` style inference flows)
 
 Note:
 - The project always uses the OpenAI Python client.
