@@ -96,6 +96,7 @@ def _build_task3_compound_lookup() -> dict[tuple[str, ...], dict[str, Any]]:
 
 INTENT_LOOKUP = _build_intent_lookup()
 TASK3_COMPOUND_LOOKUP = _build_task3_compound_lookup()
+TASK_IDS = ("task1", "task2", "task3")
 
 
 # ---------------------------------------------------------------------------
@@ -301,14 +302,6 @@ def parse_action(llm_output: str) -> dict[str, Any]:
     }
 
 
-def fallback_action() -> dict[str, Any]:
-    return {
-        "intent": "unknown",
-        "confidence": 0.0,
-        "response": "I could not confidently interpret the hand sign.",
-    }
-
-
 def heuristic_action(
     task_id: str,
     observation: dict[str, Any],
@@ -344,6 +337,34 @@ def heuristic_action(
 # ---------------------------------------------------------------------------
 
 
+def _post_json(url: str, payload: dict[str, Any], timeout: int = 30) -> dict[str, Any]:
+    response = requests.post(url, json=payload, timeout=timeout)
+    if response.status_code != 200:
+        raise RuntimeError(
+            f"{url} failed: status={response.status_code} body={response.text[:200]}"
+        )
+    return response.json()
+
+
+def _normalize_score(score: float) -> float:
+    return max(0.0, min(1.0, score))
+
+
+def _summarize_scores(task_id: str, scores: list[float]) -> None:
+    mean = sum(scores) / len(scores)
+    variance = sum((score - mean) ** 2 for score in scores) / len(scores)
+    stddev = variance**0.5
+    print(
+        (
+            f"[SUMMARY] task={task_id} episodes={EPISODES_PER_TASK} "
+            f"mean={mean:.4f} std={stddev:.4f} "
+            f"scores={','.join(f'{s:.4f}' for s in scores)}"
+        ),
+        file=sys.stderr,
+        flush=True,
+    )
+
+
 def run_task(client: OpenAI, env_url: str, task_id: str, seed: int) -> float:
     rewards: list[float] = []
     agent_history: list[dict[str, Any]] = []
@@ -356,16 +377,9 @@ def run_task(client: OpenAI, env_url: str, task_id: str, seed: int) -> float:
     log_start(task=task_id, model=MODEL_NAME)
 
     try:
-        reset_resp = requests.post(
-            f"{env_url}/reset",
-            json={"task_id": task_id, "episode_seed": seed},
-            timeout=30,
+        payload = _post_json(
+            f"{env_url}/reset", {"task_id": task_id, "episode_seed": seed}
         )
-        if reset_resp.status_code != 200:
-            raise RuntimeError(
-                f"/reset failed: status={reset_resp.status_code} body={reset_resp.text[:200]}"
-            )
-        payload = reset_resp.json()
         obs = payload["observation"]
         total_gestures = TASK_SEQUENCE_LENGTHS.get(task_id, MAX_STEPS)
 
@@ -400,12 +414,7 @@ def run_task(client: OpenAI, env_url: str, task_id: str, seed: int) -> float:
                     print(f"[DEBUG] llm_failed step={step} error={exc}", flush=True)
                 action = heuristic_action(task_id, obs, agent_history, is_final_step)
 
-            step_resp = requests.post(f"{env_url}/step", json=action, timeout=30)
-            if step_resp.status_code != 200:
-                raise RuntimeError(
-                    f"/step failed: status={step_resp.status_code} body={step_resp.text[:200]}"
-                )
-            step_payload = step_resp.json()
+            step_payload = _post_json(f"{env_url}/step", action)
 
             reward = float(step_payload.get("reward", 0.0))
             done = bool(step_payload.get("done", False))
@@ -445,7 +454,7 @@ def run_task(client: OpenAI, env_url: str, task_id: str, seed: int) -> float:
 
         if not final_score_seen and rewards:
             score = sum(rewards) / len(rewards)
-        score = max(0.0, min(1.0, score))
+        score = _normalize_score(score)
         success = score >= SUCCESS_THRESHOLD
 
     except Exception as exc:
@@ -453,7 +462,7 @@ def run_task(client: OpenAI, env_url: str, task_id: str, seed: int) -> float:
             print(f"[DEBUG] run_task_failed task={task_id} error={exc}", flush=True)
         if rewards and not final_score_seen:
             score = sum(rewards) / len(rewards)
-        score = max(0.0, min(1.0, score))
+        score = _normalize_score(score)
         success = score >= SUCCESS_THRESHOLD
     finally:
         log_end(success=success, steps=steps_taken, score=score, rewards=rewards)
@@ -472,23 +481,12 @@ def main() -> None:
             "Missing API key. Set HF_TOKEN (preferred) or OPENAI_API_KEY before running inference.py."
         )
     client = OpenAI(base_url=API_BASE_URL, api_key=api_key)
-    for task_id in ("task1", "task2", "task3"):
+    for task_id in TASK_IDS:
         scores: list[float] = []
         for seed in range(EPISODES_PER_TASK):
             score = run_task(client, ENV_URL, task_id, seed=seed)
             scores.append(score)
-        mean = sum(scores) / len(scores)
-        variance = sum((score - mean) ** 2 for score in scores) / len(scores)
-        stddev = variance**0.5
-        print(
-            (
-                f"[SUMMARY] task={task_id} episodes={EPISODES_PER_TASK} "
-                f"mean={mean:.4f} std={stddev:.4f} "
-                f"scores={','.join(f'{s:.4f}' for s in scores)}"
-            ),
-            file=sys.stderr,
-            flush=True,
-        )
+        _summarize_scores(task_id, scores)
 
 
 if __name__ == "__main__":
