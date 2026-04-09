@@ -1251,6 +1251,13 @@
                 useLocalSim: true, // true = simulate locally, false = real HTTP calls
             };
 
+            function sanitizeDisplayValue(value) {
+                const n = Number(value);
+                if (!Number.isFinite(n) || n <= 0) return 0.01;
+                if (n >= 1) return 0.99;
+                return n;
+            }
+
             function detectDefaultEnvUrl() {
                 if (
                     window.location.protocol.startsWith("http") &&
@@ -1381,6 +1388,7 @@
                         intentR + responseR + completionBonus + loopPenalty,
                     ),
                 );
+                const displayReward = sanitizeDisplayValue(reward);
 
                 const gesture = stepSpec.gesture;
                 state.rewards.push(reward);
@@ -1426,19 +1434,21 @@
 
                 // reward bar
                 const rewardEl = document.getElementById("reward-val");
-                rewardEl.textContent = reward.toFixed(2);
+                rewardEl.textContent = displayReward.toFixed(2);
                 rewardEl.className =
-                    "reward-val " + (reward >= 0 ? "pos" : "neg");
+                    "reward-val " + (displayReward >= 0 ? "pos" : "neg");
                 const fill = document.getElementById("reward-fill");
-                fill.className = "reward-fill" + (reward < 0 ? " neg" : "");
-                fill.style.width = (Math.abs(reward) * 100).toFixed(1) + "%";
+                fill.className =
+                    "reward-fill" + (displayReward < 0 ? " neg" : "");
+                fill.style.width =
+                    (Math.abs(displayReward) * 100).toFixed(1) + "%";
                 document.getElementById("reward-breakdown").textContent =
                     breakdown;
 
                 // log
                 const doneStr = done ? "true" : "false";
                 appendLog(
-                    `<div class="log-line log-step"><span class="step-num">[STEP]</span> step=${state.stepCount} action=${intent} <span class="${reward >= 0 ? "rew-pos" : "rew-neg"}">reward=${reward.toFixed(2)}</span> done=${doneStr} error=null</div>`,
+                    `<div class="log-line log-step"><span class="step-num">[STEP]</span> step=${state.stepCount} action=${intent} <span class="${displayReward >= 0 ? "rew-pos" : "rew-neg"}">reward=${displayReward.toFixed(2)}</span> done=${doneStr} error=null</div>`,
                 );
 
                 if (!state.useLocalSim) {
@@ -1460,9 +1470,10 @@
                         1,
                         state.correct / t.sequence.length,
                     );
-                    const success = finalScore >= 0.5;
+                    const displayFinalScore = sanitizeDisplayValue(finalScore);
+                    const success = displayFinalScore >= 0.5;
                     appendLog(
-                        `<div class="log-line log-end ${success ? "ok" : "fail"}">[END] success=${success} steps=${state.stepCount} score=${finalScore.toFixed(3)} rewards=${state.rewards.map((r) => r.toFixed(2)).join(",")}</div>`,
+                        `<div class="log-line log-end ${success ? "ok" : "fail"}">[END] success=${success} steps=${state.stepCount} score=${displayFinalScore.toFixed(3)} rewards=${state.rewards.map((r) => sanitizeDisplayValue(r).toFixed(2)).join(",")}</div>`,
                     );
                 }
 
@@ -1517,10 +1528,11 @@
                     state.stepCount > 0
                         ? Math.min(1, state.correct / t.sequence.length)
                         : 0;
+                const displayFinalScore = sanitizeDisplayValue(finalScore);
                 document.getElementById("score-val").textContent =
-                    finalScore.toFixed(3);
+                    displayFinalScore.toFixed(3);
                 document.getElementById("score-fill").style.width =
-                    (finalScore * 100).toFixed(1) + "%";
+                    (displayFinalScore * 100).toFixed(1) + "%";
 
                 // action buttons
                 const ag = document.getElementById("action-grid");
@@ -1552,7 +1564,7 @@
         <td style="color:var(--accent)">${h.gesture}</td>
         <td>${h.intent}</td>
         <td style="color:var(--muted)">${h.expected}</td>
-        <td class="${h.reward >= 0 ? "hist-correct" : "hist-wrong"}">${h.reward.toFixed(2)}</td>
+        <td class="${sanitizeDisplayValue(h.reward) >= 0 ? "hist-correct" : "hist-wrong"}">${sanitizeDisplayValue(h.reward).toFixed(2)}</td>
         <td class="${h.correct ? "hist-correct" : "hist-wrong"}">${h.correct ? "✓" : "✗"}</td>
       </tr>`,
                         )
