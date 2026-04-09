@@ -4,12 +4,17 @@ from slie.data_loader import get_scenario, load_tasks
 from slie.models import EpisodeHistory
 from slie.state import EnvironmentState
 
+
+def _strict_unit(value: float) -> float:
+    return max(0.01, min(0.99, value))
+
+
 _TASK3_EMPTY_BREAKDOWN = {
-    "compound_intent_score": 0.0,
-    "keyword_coverage_score": 0.0,
-    "intermediate_consistency_score": 0.0,
-    "confidence_calibration_score": 0.0,
-    "final_score": 0.0,
+    "compound_intent_score": 0.01,
+    "keyword_coverage_score": 0.01,
+    "intermediate_consistency_score": 0.01,
+    "confidence_calibration_score": 0.01,
+    "final_score": 0.01,
 }
 
 
@@ -23,17 +28,17 @@ def _is_intent_correct(entry: dict) -> bool:
 def task1_grader(history: EpisodeHistory) -> float:
     total = len(history.interaction_history)
     if total == 0:
-        return 0.0
+        return 0.01
     correct = sum(
         1 for entry in history.interaction_history if _is_intent_correct(entry)
     )
-    return round(correct / total, 4)
+    return round(_strict_unit(correct / total), 4)
 
 
 def task2_grader(history: EpisodeHistory) -> float:
     total = len(history.interaction_history)
     if total == 0:
-        return 0.0
+        return 0.01
 
     correct = sum(
         1 for entry in history.interaction_history if _is_intent_correct(entry)
@@ -44,7 +49,7 @@ def task2_grader(history: EpisodeHistory) -> float:
     all_correct = correct == total
     sequence_bonus = 0.1 if all_correct and all_processed else 0.0
 
-    return round(min(1.0, base_score + sequence_bonus), 4)
+    return round(_strict_unit(min(1.0, base_score + sequence_bonus)), 4)
 
 
 def _task3_components(history: EpisodeHistory) -> dict[str, float]:
@@ -105,12 +110,12 @@ def _task3_components(history: EpisodeHistory) -> dict[str, float]:
     # Keep backward-compatible floor for perfect legacy trajectories.
     legacy_floor = compound_score * 0.8 + intermediate_score * 0.2
     final = max(final, legacy_floor)
-    final = min(1.0, max(0.0, final))
+    final = _strict_unit(min(1.0, max(0.0, final)))
     return {
-        "compound_intent_score": round(compound_score, 4),
-        "keyword_coverage_score": round(keyword_score, 4),
-        "intermediate_consistency_score": round(intermediate_score, 4),
-        "confidence_calibration_score": round(confidence_score, 4),
+        "compound_intent_score": round(_strict_unit(compound_score), 4),
+        "keyword_coverage_score": round(_strict_unit(keyword_score), 4),
+        "intermediate_consistency_score": round(_strict_unit(intermediate_score), 4),
+        "confidence_calibration_score": round(_strict_unit(confidence_score), 4),
         "final_score": round(final, 4),
     }
 

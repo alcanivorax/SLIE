@@ -870,7 +870,7 @@
                                         class="metric-val amber"
                                         id="m-total-reward"
                                     >
-                                        0.00
+                                        0.01
                                     </div>
                                     <div class="metric-lbl">Total reward</div>
                                 </div>
@@ -882,7 +882,7 @@
                                         >Episode score</span
                                     >
                                     <span class="score-val" id="score-val"
-                                        >0.000</span
+                                        >0.010</span
                                     >
                                 </div>
                                 <div class="score-track">
@@ -1521,7 +1521,7 @@
                 document.getElementById("m-correct").textContent =
                     state.correct;
                 document.getElementById("m-total-reward").textContent =
-                    state.totalReward.toFixed(2);
+                    sanitizeDisplayValue(state.totalReward).toFixed(2);
 
                 // score
                 const finalScore =

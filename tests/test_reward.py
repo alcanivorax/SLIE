@@ -21,4 +21,4 @@ def test_reward_final_clamped() -> None:
         "expected_keywords": ["hello"],
     }
     reward, _ = compute_reward(action, step_spec, None, is_final_step=True)
-    assert reward == 1.0
+    assert reward == 0.99

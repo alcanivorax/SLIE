@@ -63,7 +63,7 @@ def check_env_behavior() -> None:
 
     assert out is not None and out.done is True
     assert out.observation.hand_landmarks == []
-    assert out.info.final_score == 1.0
+    assert out.info.final_score == 0.99
 
     try:
         env.step(SLIEAction(intent="x", confidence=0.1, response="x"))

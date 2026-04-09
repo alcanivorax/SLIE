@@ -3,6 +3,10 @@ from __future__ import annotations
 from slie.models import SLIEAction
 
 
+def _strict_unit(value: float) -> float:
+    return max(0.01, min(0.99, value))
+
+
 def compute_reward(
     action: SLIEAction,
     step_spec: dict,
@@ -48,6 +52,7 @@ def compute_reward(
         + invalid_penalty
     )
     reward = max(-1.0, min(1.0, reward))
+    reward = _strict_unit(reward)
 
     debug = {
         "intent_reward": intent_reward,

@@ -62,7 +62,7 @@ def check_reward() -> None:
     check(r == 0.7, "perfect non-final reward should be 0.7")
 
     r, _ = compute_reward(SLIEAction(intent="greeting", confidence=0.9, response="hello there"), step_spec, None, True)
-    check(r == 1.0, "perfect final reward should be 1.0")
+    check(r == 0.99, "perfect final reward should be 0.99")
 
     r, _ = compute_reward(SLIEAction(intent="hello", confidence=0.9, response="x"), step_spec, None, False)
     check(r == 0.2, "alias-only reward should be 0.2")
@@ -73,7 +73,7 @@ def check_reward() -> None:
     check(r == 0.2, "loop penalty should apply (0.4+0.3-0.5=0.2)")
 
     r, _ = compute_reward(SLIEAction(intent="", confidence=0.9, response=""), step_spec, None, False)
-    check(r == -0.3, "empty fields should yield -0.3")
+    check(r == 0.01, "empty fields should clamp to strict minimum 0.01")
 
 
 def check_graders() -> None:
@@ -91,7 +91,7 @@ def check_graders() -> None:
         steps_taken=5,
         max_steps=10,
     )
-    check(task1_grader(h1) == 1.0, "task1 all-correct should be 1.0")
+    check(task1_grader(h1) == 0.99, "task1 all-correct should be 0.99")
 
     h1_partial = h1.model_copy(update={"interaction_history": h1.interaction_history[:3] + [{"agent_intent": "bad", "expected_intent": "x", "intent_aliases": []}, {"agent_intent": "bad", "expected_intent": "x", "intent_aliases": []}]})
     check(task1_grader(h1_partial) == 0.6, "task1 3/5 should be 0.6")
@@ -107,7 +107,7 @@ def check_graders() -> None:
         steps_taken=8,
         max_steps=10,
     )
-    check(task2_grader(h2) == 1.0, "task2 all-correct + processed should cap to 1.0")
+    check(task2_grader(h2) == 0.99, "task2 all-correct + processed should cap to 0.99")
 
     h3 = EpisodeHistory(
         task_id="task3",
@@ -121,7 +121,7 @@ def check_graders() -> None:
         steps_taken=3,
         max_steps=10,
     )
-    check(task3_grader(h3) == 1.0, "task3 exact compound + full intermediate should be 1.0")
+    check(task3_grader(h3) == 0.99, "task3 exact compound + full intermediate should be 0.99")
 
 
 def check_env() -> None:
@@ -148,7 +148,7 @@ def check_env() -> None:
         final = env.step(action)
 
     check(final is not None and final.done, "episode should be done")
-    check(final.info.final_score == 1.0, "perfect task1 should score 1.0")
+    check(final.info.final_score == 0.99, "perfect task1 should score 0.99")
 
 
 def main() -> None:

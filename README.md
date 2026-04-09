@@ -97,6 +97,10 @@ docker run --rm -p 8000:8000 slie
 - `[STEP] step=<n> action=<str> reward=<0.00> done=<true|false> error=<msg|null>`
 - `[END] success=<true|false> steps=<n> score=<score> rewards=<r1,...,rn>`
 
+Score/reward boundary rule:
+- Emitted task scores and reward values are forced to the open interval `(0, 1)`.
+- Exact boundary values are sanitized (`0.00 -> 0.01`, `1.00 -> 0.99`).
+
 Required environment variables:
 
 - `API_BASE_URL`

@@ -36,7 +36,7 @@ def run() -> None:
         final = env.step(SLIEAction(intent=intent, confidence=0.9, response=intent))
 
     assert_true(final is not None and final.done, "episode should be done after 5 task1 steps")
-    assert_true(final.info.final_score == 1.0, "perfect task1 run should score 1.0")
+    assert_true(final.info.final_score == 0.99, "perfect task1 run should score 0.99")
 
     try:
         env.step(SLIEAction(intent="x", confidence=0.1, response="x"))
