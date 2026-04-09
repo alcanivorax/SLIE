@@ -116,17 +116,19 @@ def log_step(
     done_text = "true" if done else "false"
     error_text = error if error else "null"
     action_text = action.replace("\n", " ").strip()
+    reward_text = f"{_strict_score(reward):.2f}"
     print(
-        f"[STEP] step={step} action={action_text} reward={reward:.2f} done={done_text} error={error_text}",
+        f"[STEP] step={step} action={action_text} reward={reward_text} done={done_text} error={error_text}",
         flush=True,
     )
 
 
 def log_end(success: bool, steps: int, score: float, rewards: list[float]) -> None:
     success_text = "true" if success else "false"
-    reward_text = ",".join(f"{r:.2f}" for r in rewards)
+    reward_text = ",".join(f"{_strict_score(r):.2f}" for r in rewards)
+    score_text = f"{_strict_score(score):.2f}"
     print(
-        f"[END] success={success_text} steps={steps} score={score:.2f} rewards={reward_text}",
+        f"[END] success={success_text} steps={steps} score={score_text} rewards={reward_text}",
         flush=True,
     )
 
