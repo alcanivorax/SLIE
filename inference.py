@@ -352,6 +352,11 @@ def _normalize_score(score: float) -> float:
     return max(0.0, min(1.0, score))
 
 
+def _strict_score(score: float) -> float:
+    """Competition requirement: score must be strictly inside (0, 1)."""
+    return max(0.01, min(0.99, _normalize_score(score)))
+
+
 def _summarize_scores(task_id: str, scores: list[float]) -> None:
     mean = sum(scores) / len(scores)
     variance = sum((score - mean) ** 2 for score in scores) / len(scores)
@@ -456,7 +461,7 @@ def run_task(client: OpenAI, env_url: str, task_id: str, seed: int) -> float:
 
         if not final_score_seen and rewards:
             score = sum(rewards) / len(rewards)
-        score = _normalize_score(score)
+        score = _strict_score(score)
         success = score >= SUCCESS_THRESHOLD
 
     except Exception as exc:
@@ -464,7 +469,7 @@ def run_task(client: OpenAI, env_url: str, task_id: str, seed: int) -> float:
             print(f"[DEBUG] run_task_failed task={task_id} error={exc}", flush=True)
         if rewards and not final_score_seen:
             score = sum(rewards) / len(rewards)
-        score = _normalize_score(score)
+        score = _strict_score(score)
         success = score >= SUCCESS_THRESHOLD
     finally:
         log_end(success=success, steps=steps_taken, score=score, rewards=rewards)
